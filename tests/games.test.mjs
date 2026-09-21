@@ -250,3 +250,96 @@ test('spatial: summary - median RT by angle and the per-degree slope', () => {
   assert.ok(m.rtSlope > 5 && m.rtSlope < 8, 'about 6.5 ms per degree');
   assert.equal(m.timeouts, 1);
 });
+
+/* ----------------------------------------------------- sequence recall */
+
+import * as SQ from '../js/games/logic/sequence-recall-logic.js';
+import { abilityFor } from '../js/core/profile.js';
+
+test('sequence recall: sequences are reproducible, the right length, and free of shortcuts', () => {
+  assert.deepEqual(SQ.makeSequence(createRng(7), 8), SQ.makeSequence(createRng(7), 8));
+  for (let seed = 1; seed <= 400; seed++) {
+    const rng = createRng(seed);
+    for (let len = 2; len <= 12; len++) {
+      const s = SQ.makeSequence(rng, len);
+      assert.equal(s.length, len);
+      for (let i = 0; i < s.length; i++) {
+        assert.ok(SQ.DIGITS.includes(s[i]), 'digits 1-9 only');
+        if (i >= 1) assert.notEqual(s[i], s[i - 1], 'no digit twice in a row');
+        if (i >= 2) {
+          const up = s[i - 1] - s[i - 2] === 1 && s[i] - s[i - 1] === 1;
+          const down = s[i - 2] - s[i - 1] === 1 && s[i - 1] - s[i] === 1;
+          assert.ok(!up && !down, `no run of three in ${s}`);
+        }
+      }
+    }
+  }
+});
+
+test('sequence recall: forward and reverse answers, exact-order checking', () => {
+  const seq = [7, 2, 9, 4];
+  assert.deepEqual(SQ.expectedAnswer(seq, false), [7, 2, 9, 4]);
+  assert.deepEqual(SQ.expectedAnswer(seq, true), [4, 9, 2, 7]);
+  assert.deepEqual(seq, [7, 2, 9, 4], 'the shown sequence is not mutated');
+  assert.equal(SQ.isCorrect([7, 2, 9, 4], [7, 2, 9, 4]), true);
+  assert.equal(SQ.isCorrect([7, 9, 2, 4], [7, 2, 9, 4]), false, 'same digits, wrong order');
+  assert.equal(SQ.isCorrect([7, 2, 9], [7, 2, 9, 4]), false, 'incomplete');
+  assert.equal(SQ.positionsRight([7, 9, 2, 4], [7, 2, 9, 4]), 2);
+});
+
+test('sequence recall: presentation times come from one start, so they never drift', () => {
+  const plan = SQ.schedule(10, { on: 750, off: 250 });
+  plan.items.forEach((it, i) => {
+    assert.equal(it.show, i * 1000);
+    assert.equal(it.hide - it.show, 750);
+  });
+  assert.equal(plan.end, 10000);
+});
+
+test('sequence recall: staircase - longer after a hit, two misses in a row end the round', () => {
+  const cfg = { maxLength: 12 };
+  let s = { length: 3, misses: 0 };
+  s = SQ.step(s, true, cfg);
+  assert.deepEqual(s, { length: 4, misses: 0, done: false });
+  s = SQ.step(s, false, cfg);
+  assert.deepEqual(s, { length: 4, misses: 1, done: false }, 'a miss retries the same length');
+  s = SQ.step(s, true, cfg);
+  assert.deepEqual(s, { length: 5, misses: 0, done: false }, 'a hit clears the miss');
+  s = SQ.step(SQ.step(s, false, cfg), false, cfg);
+  assert.equal(s.done, true);
+  assert.equal(SQ.step({ length: 12, misses: 0 }, true, cfg).done, true, 'passing the cap ends the round');
+});
+
+test('sequence recall: a round always ends - worst case is bounded', () => {
+  // alternate miss / hit forever: the length still climbs, so the cap is reached
+  let s = { length: 3, misses: 0 };
+  let trials = 0;
+  for (let hit = false; !s.done; hit = !hit) { s = SQ.step(s, hit, { maxLength: 12 }); trials += 1; }
+  assert.ok(trials <= 2 * (12 - 3 + 1) + 1, `ended after ${trials} trials`);
+});
+
+test('sequence recall: summary - span, accuracy and times from correct trials', () => {
+  const t = (length, correct, right, rt, firstRt = 500) => ({ length, correct, right, rt, firstRt });
+  const m = SQ.summarize([
+    t(3, true, 3, 2000), t(4, true, 4, 3000), t(5, false, 3, 4000), t(5, true, 5, 4500), t(6, false, 2, 5200), t(6, false, 4, null)
+  ]);
+  assert.equal(m.span, 5);
+  assert.equal(m.levelReached, 6);
+  assert.equal(m.correct, 3);
+  assert.equal(m.wrong, 3);
+  assert.equal(m.total, 6);
+  assert.equal(m.accuracy, 50);
+  assert.equal(m.itemAccuracy, Math.round((21 / 29) * 100));
+  assert.equal(m.medianRt, 3000);
+  assert.equal(SQ.summarize([t(3, false, 1, 2000), t(3, false, 0, 1800)]).span, 0);
+});
+
+test('sequence recall: ability score - longer spans score higher, backwards is credited', () => {
+  const a = abilityFor('sequence-recall');
+  assert.equal(a.score({ mode: 'medium', total: 1, span: 4 }), null, 'one trial is not a measurement');
+  const at = (span, mode = 'medium', reverse = false) => a.score({ mode, span, reverse, total: 8 });
+  for (let s = 1; s < 12; s++) assert.ok(at(s + 1) >= at(s), 'monotonic in span');
+  assert.equal(at(6.5), 50);
+  assert.ok(at(5, 'hard', true) > at(5), 'a backward span of 5 beats a forward span of 5');
+  assert.ok(at(6, 'easy') < at(6), 'the slower Easy pace earns a little less');
+});

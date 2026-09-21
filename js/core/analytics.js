@@ -20,6 +20,7 @@ export const EVENTS = [
   'brain_test_abandoned',
   'practice_started',
   'practice_completed',
+  'game_abandoned',        // practice round quit with Esc (the four newest games)
   'result_shared'
 ];
 

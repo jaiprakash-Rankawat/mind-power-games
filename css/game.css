@@ -545,3 +545,67 @@ body.game-page{min-height:100vh;display:flex;justify-content:center;padding:22px
    text colours - otherwise light mode puts dark text on a dark card. */
 .overlay,.ts-card,.np-num,.rx-pad{--text:#eef1ff;--muted:#96a0c8}
 .overlay,.ts-card,.np-num{color:var(--text)}
+
+/* ============ the four newest games ============ */
+
+/* ---------- sequence recall ---------- */
+.sq-arena{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:12px}
+.sq-card{
+  /* stays dark in both themes, so it keeps the dark palette's text colours */
+  --text:#eef1ff;--muted:#96a0c8;color:var(--text);
+  width:140px;height:140px;border-radius:28px;display:grid;place-items:center;
+  background:linear-gradient(160deg,#262c57,#1a1f3f);border:3px solid rgba(255,255,255,.12);
+  box-shadow:0 14px 30px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.08);
+  transition:border-color .12s ease, box-shadow .12s ease;
+}
+.sq-card.lit{border-color:rgba(55,220,242,.75);box-shadow:0 0 34px rgba(55,220,242,.35), 0 14px 30px rgba(0,0,0,.4)}
+.sq-card.good{border-color:var(--good);box-shadow:0 0 0 4px rgba(52,211,153,.45), 0 14px 30px rgba(0,0,0,.4)}
+.sq-card.bad{border-color:var(--bad);box-shadow:0 0 0 4px rgba(251,113,133,.5), 0 14px 30px rgba(0,0,0,.4)}
+.sq-digit{font-size:84px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;user-select:none;transition:opacity .08s ease}
+.sq-digit.show{animation:sqIn .15s cubic-bezier(.2,1.4,.5,1)}
+.sq-digit.out{opacity:0}
+.sq-card.ask .sq-digit{color:var(--muted);font-size:60px}
+.sq-card.good .sq-digit{color:var(--good);font-size:64px}
+.sq-card.bad .sq-digit{color:var(--bad);font-size:64px}
+@keyframes sqIn{0%{opacity:.25;transform:scale(.82)}100%{opacity:1;transform:none}}
+
+/* progress dots while the sequence plays, answer slots while typing - same height */
+.sq-dots{display:flex;gap:8px;align-items:center;justify-content:center;min-height:54px}
+.sq-dot{width:10px;height:10px;border-radius:50%;background:rgba(150,160,200,.3);transition:background .12s ease, transform .12s ease}
+.sq-dot.done{background:var(--brand)}
+.sq-dot.on{background:var(--brand-2);transform:scale(1.35)}
+.sq-arena:not(.showing) .sq-dots{display:none}
+.sq-arena.showing .sq-slots{display:none}
+.sq-slots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:54px;max-width:100%}
+.sq-slot{
+  position:relative;width:44px;height:54px;border-radius:12px;display:grid;place-items:center;
+  border:2px dashed rgba(150,160,200,.45);font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;
+}
+.sq-slot.filled{border-style:solid;border-color:rgba(124,92,255,.6);background:var(--card-hi)}
+.sq-slot.pop{animation:chipHit .3s cubic-bezier(.34,1.6,.64,1)}
+.sq-slot.right{border:2px solid var(--good);color:var(--good)}
+.sq-slot.wrong{border:2px solid var(--bad);color:var(--bad)}
+.sq-slot.right::after,.sq-slot.wrong::after{
+  position:absolute;top:-8px;right:-8px;width:18px;height:18px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;font-weight:900;color:#0d0f1e;
+}
+.sq-slot.right::after{content:'\2713';background:var(--good)}
+.sq-slot.wrong::after{content:'\2717';background:var(--bad)}
+.sq-reveal{min-height:18px;font-size:13px;color:var(--muted);letter-spacing:.5px;font-variant-numeric:tabular-nums;white-space:pre}
+.sq-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,300px)}
+.sq-key{
+  padding:12px 0;border-radius:14px;background:var(--card-hi);border:1px solid var(--line);
+  font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;touch-action:manipulation;
+  transition:transform .08s ease, border-color .15s ease, opacity .15s ease;
+}
+.sq-key:hover:not(:disabled){transform:translateY(-2px);border-color:rgba(55,220,242,.6)}
+.sq-key:active:not(:disabled){transform:scale(.95)}
+.sq-key:disabled{opacity:.35;cursor:default}
+.sq-undo{grid-column:1 / -1;font-size:13px;font-weight:700;letter-spacing:.5px;padding:10px 0}
+
+@media (max-width:520px){
+  .sq-card{width:116px;height:116px}
+  .sq-digit{font-size:68px}
+  .sq-slot{width:36px;height:46px;font-size:20px}
+  .sq-key{padding:10px 0;font-size:20px}
+}

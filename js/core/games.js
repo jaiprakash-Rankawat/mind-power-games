@@ -432,6 +432,62 @@ export const GAMES = [
         }
       }
     ]
+  },
+  {
+    id: 'sequence-recall',
+    name: 'Sequence Recall',
+    icon: '🧮',
+    tagline: 'Digits flash one by one. Type them back in the same order.',
+    skills: 'Working memory · Order',
+    module: 'sequence-recall.js',
+    locked: false,
+    modes: ['easy', 'medium', 'hard'],
+    category: 'Sequence Memory',
+    minutes: 1.5,
+    instruction: 'Watch the digits appear one at a time, then type them back in the same order. Each correct answer adds a digit.',
+    keys: 'Keys 1-9, Backspace to undo - or tap',
+    tutorial: [
+      {
+        title: 'Watch the digits',
+        text: 'Digits appear <b>one at a time</b>, then vanish. Remember them <b>in order</b>.',
+        buildDemo(box) {
+          const digit = el('div', { class: 'tut-ts-digit', text: '' });
+          box.append(el('div', { style: { textAlign: 'center' } }, el('div', { class: 'tut-ts-card' }, digit)));
+          const frames = ['7', '', '2', '', '9', '', '4', '', '', ''];
+          let i = 0;
+          const iv = setInterval(() => { digit.textContent = frames[i]; i = (i + 1) % frames.length; }, 450);
+          return () => clearInterval(iv);
+        }
+      },
+      {
+        title: 'Type them back',
+        text: 'When the last one is gone, type the sequence with keys <b>1-9</b> or the keypad. <b>Backspace</b> fixes a slip.',
+        buildDemo(box) {
+          const answer = ['7', '2', '9', '4'];
+          const slots = answer.map(() => el('div', { class: 'tut-np-num', text: '' }));
+          box.append(el('div', { class: 'tut-np-row' }, slots));
+          let n = 0;
+          const iv = setInterval(() => {
+            n = n >= answer.length + 2 ? 0 : n + 1;
+            slots.forEach((s, j) => { s.textContent = j < n ? answer[j] : ''; });
+          }, 600);
+          return () => clearInterval(iv);
+        }
+      },
+      {
+        title: 'The sequence grows',
+        text: 'Each correct answer adds <b>one digit</b>. Miss twice in a row and the round ends. Your result is your <b>span</b> - the longest sequence you got perfectly. On Hard, type it <b>backwards</b>.',
+        buildDemo(box) {
+          const lenEl = el('b', { text: '3', style: { fontSize: '42px', color: 'var(--brand-2)' } });
+          box.append(el('div', { style: { textAlign: 'center' } },
+            el('div', { text: 'SEQUENCE LENGTH', style: { fontSize: '10px', letterSpacing: '1.5px', color: 'var(--muted)', marginBottom: '6px' } }),
+            lenEl));
+          let len = 3;
+          const iv = setInterval(() => { len = len >= 8 ? 3 : len + 1; lenEl.textContent = len; }, 900);
+          return () => clearInterval(iv);
+        }
+      }
+    ]
   }
 ];
 

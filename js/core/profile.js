@@ -189,6 +189,24 @@ export const ABILITIES = [
       return Math.round(s);
     },
     metric: (run) => `${run.accuracy}% accurate, ${(run.medianRt / 1000).toFixed(1)}s median`
+  },
+  {
+    id: 'sequence-memory',
+    name: 'Sequence Memory',
+    game: 'sequence-recall',
+    gameName: 'Sequence Recall',
+    icon: '\u{1F9EE}',
+    what: 'Holding items in mind in order and playing them back',
+    /* Digit span. Published adult forward spans mostly fall around 6-7 and backward
+       spans about two digits shorter, so a backward span earns +2 and the slower
+       Easy pace gives up a quarter digit. Rough reference points, not norms. */
+    score(run) {
+      if (typeof run.span !== 'number' || (run.total || 0) < 2) return null;
+      const shift = run.reverse ? 2 : run.mode === 'easy' ? -0.25 : 0;
+      return Math.round(curve(run.span + shift,
+        [[0, 2], [2, 5], [3, 10], [4, 20], [5, 32], [6, 43], [6.5, 50], [7, 57], [8, 70], [9, 82], [10, 91], [11, 96], [12, 99]]));
+    },
+    metric: (run) => `span ${run.span}${run.reverse ? ' backwards' : ''}, ${run.correct}/${run.total} correct`
   }
 ];
 
