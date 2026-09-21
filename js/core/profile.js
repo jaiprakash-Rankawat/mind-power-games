@@ -275,7 +275,7 @@ export const ABILITIES = [
   }
 ];
 
-/* Abilities announced but not yet playable (none - all seven games are built). */
+/* Abilities announced but not yet playable (none - every game is built). */
 export const COMING_SOON = [];
 
 export const abilityFor = (gameId) => ABILITIES.find((a) => a.game === gameId) || null;

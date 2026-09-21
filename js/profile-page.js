@@ -4,7 +4,7 @@
 
 import { buildMindProfile, TYPICAL } from './core/profile.js';
 import { radarChart, lineChart, meter } from './core/charts.js';
-import { getCurrentSession, listSessions, testMinutes } from './core/session.js';
+import { getCurrentSession, listSessions, testMinutes, officialOrder } from './core/session.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { el } from './core/util.js';
 import { wireThemeToggle } from './core/theme-toggle.js';
@@ -81,7 +81,7 @@ async function brainTests() {
     el('div', { class: 'bt-head' },
       el('div', {},
         el('h2', { text: 'Brain Test' }),
-        el('p', { class: 'lead', text: `The official test: all seven games in a fixed order at fixed settings, about ${testMinutes()} minutes. Only official tests can count toward rankings; practice never does.` })),
+        el('p', { class: 'lead', text: `The official test: all ${officialOrder().length} games in a fixed order at fixed settings, about ${testMinutes()} minutes. Only official tests can count toward rankings; practice never does.` })),
       el('a', { class: 'btn primary', href: 'test.html' },
         current ? `Resume - game ${current.index + 1} of ${current.order.length}` : 'Take the Brain Test')),
     done.length
