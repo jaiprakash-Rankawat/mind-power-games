@@ -488,6 +488,49 @@ export const GAMES = [
         }
       }
     ]
+  },
+  {
+    id: 'visual-tracking',
+    name: 'Visual Tracking',
+    icon: '👀',
+    tagline: 'One turns red, then they all look alike and move. Keep your eyes on it.',
+    skills: 'Visual attention · Tracking',
+    module: 'visual-tracking.js',
+    locked: false,
+    modes: ['easy', 'medium', 'hard'],
+    category: 'Visual Tracking',
+    minutes: 1.5,
+    instruction: 'Follow the red object with your eyes while they all move, then pick it out when they stop.',
+    keys: 'Click the object, or press its number',
+    tutorial: [
+      {
+        title: 'Spot the red one',
+        text: 'Several objects appear. One is <b>red</b> - that is your target.',
+        buildDemo(box) {
+          const dots = [0, 1, 2, 3].map((i) => el('span', { class: 'vt-demo-dot' + (i === 1 ? ' cue' : '') }));
+          box.append(el('div', { class: 'vt-demo' }, dots));
+        }
+      },
+      {
+        title: 'They all look the same - and move',
+        text: 'The red fades, every object looks <b>identical</b>, and they start moving. Follow the target with your eyes.',
+        buildDemo(box) {
+          const dots = [0, 1, 2, 3].map((i) => el('span', { class: 'vt-demo-dot' + (i === 1 ? ' cue' : '') }));
+          box.append(el('div', { class: 'vt-demo' }, dots));
+          let on = true;
+          const iv = setInterval(() => { on = !on; dots[1].classList.toggle('cue', on); }, 1200);
+          return () => clearInterval(iv);
+        }
+      },
+      {
+        title: 'Pick it out',
+        text: 'When they stop, each gets a <b>number</b>. Click the one you followed or press its number. Two right in a row and the next round is <b>faster</b>.',
+        buildDemo(box) {
+          box.append(el('div', { class: 'vt-demo' },
+            ['1', '2', '3', '4'].map((n) => el('span', { class: 'vt-demo-dot', text: n }))));
+        }
+      }
+    ]
   }
 ];
 

@@ -343,3 +343,97 @@ test('sequence recall: ability score - longer spans score higher, backwards is c
   assert.ok(at(5, 'hard', true) > at(5), 'a backward span of 5 beats a forward span of 5');
   assert.ok(at(6, 'easy') < at(6), 'the slower Easy pace earns a little less');
 });
+
+/* ----------------------------------------------------- visual tracking */
+
+import * as VT from '../js/games/logic/visual-tracking-logic.js';
+
+const VT_MODES = {
+  easy: { n: 3, duration: 4000, wander: 0.7, turns: 0 },
+  medium: { n: 5, duration: 5000, wander: 1.1, turns: 0.25 },
+  hard: { n: 8, duration: 5000, wander: 1.4, turns: 0.5 },
+  crowded: { n: 10, duration: 5000, wander: 1.4, turns: 0.5 }
+};
+
+test('visual tracking: motion is reproducible from its seed', () => {
+  const p = { ...VT_MODES.hard, speed: 320 };
+  assert.deepEqual(VT.simulate(4242, p).frames, VT.simulate(4242, p).frames);
+  assert.notDeepEqual(VT.simulate(4242, p).frames, VT.simulate(4243, p).frames);
+});
+
+test('visual tracking: objects stay in bounds, never overlap, keep moving, never park', () => {
+  const { w, h, r } = VT.ARENA;
+  for (const [name, m] of Object.entries(VT_MODES)) {
+    for (const speed of VT.SPEEDS) {
+      for (let seed = 1; seed <= 12; seed++) {
+        const s = VT.simulate(seed * 7919 + speed, { ...m, speed });
+        let slow = 0;
+        for (let i = 0; i < s.n; i++) {
+          const xs = [];
+          const ys = [];
+          for (let f = 0; f <= s.steps; f++) {
+            const p = VT.positionAt(s, f, i);
+            xs.push(p.x); ys.push(p.y);
+            assert.ok(p.x >= r - 1e-3 && p.x <= w - r + 1e-3 && p.y >= r - 1e-3 && p.y <= h - r + 1e-3, `${name}: in bounds`);
+            for (let j = i + 1; j < s.n; j++) {
+              const q = VT.positionAt(s, f, j);
+              assert.ok(Math.hypot(p.x - q.x, p.y - q.y) >= 2 * r + 4, `${name}: objects ${i},${j} never touch`);
+            }
+            if (f && Math.hypot(xs[f] - xs[f - 1], ys[f] - ys[f - 1]) / VT.DT < 0.5 * speed) slow += 1;
+          }
+          // never parked: it always leaves any small circle within 4s of a 5s trial
+          for (let f = 0; f <= s.steps; f += 5) {
+            let g = f;
+            while (g <= s.steps && Math.hypot(xs[g] - xs[f], ys[g] - ys[f]) < 2 * r) g += 1;
+            assert.ok((g - f) * VT.DT < 4, `${name} speed ${speed}: object ${i} lingered ${((g - f) * VT.DT).toFixed(1)}s`);
+          }
+        }
+        assert.ok(slow / (s.n * s.steps) < 0.005, `${name}: speed held constant (${slow} slow frames)`);
+      }
+    }
+  }
+});
+
+test('visual tracking: start positions are spread out, answer numbers cover every object once', () => {
+  for (let seed = 1; seed <= 200; seed++) {
+    const pts = VT.startPositions(createRng(seed), 10);
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      assert.ok(Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y) >= 3.4 * VT.ARENA.r);
+    }
+  }
+  const s = VT.simulate(99, { ...VT_MODES.hard, speed: 270 });
+  const order = VT.labelOrder(s);
+  assert.deepEqual([...order].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5, 6, 7]);
+  const xs = order.map((i) => VT.positionAt(s, s.steps, i).x);
+  assert.deepEqual(xs, [...xs].sort((a, b) => a - b), 'numbered left to right');
+});
+
+test('visual tracking: staircase - two right to speed up, one wrong to slow down', () => {
+  assert.deepEqual(VT.nextLevel(3, 0, true), { level: 3, streak: 1 });
+  assert.deepEqual(VT.nextLevel(3, 1, true), { level: 4, streak: 0 });
+  assert.deepEqual(VT.nextLevel(3, 1, false), { level: 2, streak: 0 });
+  assert.deepEqual(VT.nextLevel(1, 0, false), { level: 1, streak: 0 });
+  assert.deepEqual(VT.nextLevel(VT.LEVELS, 1, true), { level: VT.LEVELS, streak: 0 });
+  assert.equal(VT.speedFor(1), VT.SPEEDS[0]);
+  assert.equal(VT.speedFor(99), VT.SPEEDS[VT.LEVELS - 1]);
+});
+
+test('visual tracking: summary - speed held from the settled second half', () => {
+  const t = (level, correct, rt) => ({ level, speed: VT.speedFor(level), correct, rt });
+  const m = VT.summarize([t(2, true, 900), t(2, true, 800), t(3, false, 1500), t(2, true, 700), t(2, true, 1000), t(3, true, 1200)]);
+  assert.equal(m.correct, 5);
+  assert.equal(m.accuracy, 83);
+  assert.equal(m.levelReached, 3);
+  assert.equal(m.levelEstimate, 2.3);                          // levels 2, 2, 3
+  assert.equal(m.speedHeld, Math.round((VT.speedFor(2) * 2 + VT.speedFor(3)) / 3));
+  assert.equal(m.medianRt, 900);
+});
+
+test('visual tracking: ability score - faster held speed and more look-alikes score higher', () => {
+  const a = abilityFor('visual-tracking');
+  assert.equal(a.score({ speedHeld: 300, objects: 5, accuracy: 80, total: 3 }), null, 'too few rounds');
+  const at = (speedHeld, objects = 5, accuracy = 75) => a.score({ speedHeld, objects, accuracy, total: 10 });
+  assert.ok(at(380) > at(270));
+  assert.ok(at(300, 8) > at(300, 3), 'the same speed among 8 objects beats among 3');
+  assert.ok(at(530, 5, 30) <= 30, 'near-chance accuracy is capped');
+});

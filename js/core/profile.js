@@ -207,6 +207,28 @@ export const ABILITIES = [
         [[0, 2], [2, 5], [3, 10], [4, 20], [5, 32], [6, 43], [6.5, 50], [7, 57], [8, 70], [9, 82], [10, 91], [11, 96], [12, 99]]));
     },
     metric: (run) => `span ${run.span}${run.reverse ? ' backwards' : ''}, ${run.correct}/${run.total} correct`
+  },
+  {
+    id: 'tracking',
+    name: 'Visual Tracking',
+    game: 'visual-tracking',
+    gameName: 'Visual Tracking',
+    icon: '\u{1F440}',
+    what: 'Following one moving object among identical ones',
+    /* The staircase settles on the speed the player can follow at about 70% right,
+       so the speed held in the second half is the estimate. More look-alikes make
+       the same speed harder, so it is credited by object count. These anchors are
+       our own judgement for this arena, not published norms. Accuracy near
+       chance means the player was not tracking at all, so it is capped. */
+    score(run) {
+      if (typeof run.speedHeld !== 'number' || (run.total || 0) < 6) return null;
+      const load = 0.8 + 0.09 * Math.max(0, (run.objects || 5) - 3);
+      let s = curve(run.speedHeld * load,
+        [[100, 5], [150, 15], [200, 28], [250, 40], [300, 50], [360, 60], [420, 70], [500, 82], [580, 91], [680, 97]]);
+      if ((run.accuracy || 0) < 45) s = Math.min(s, 30);
+      return Math.round(s);
+    },
+    metric: (run) => `speed ${run.levelEstimate} held with ${run.objects} objects, ${run.accuracy}% right`
   }
 ];
 

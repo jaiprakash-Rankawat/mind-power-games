@@ -609,3 +609,38 @@ body.game-page{min-height:100vh;display:flex;justify-content:center;padding:22px
   .sq-slot{width:36px;height:46px;font-size:20px}
   .sq-key{padding:10px 0;font-size:20px}
 }
+
+/* ---------- visual tracking ---------- */
+.vt-arena{margin-top:12px}
+.vt-field{
+  /* a dark stage in both themes */
+  --text:#eef1ff;--muted:#96a0c8;--vt-d:40px;
+  position:relative;width:100%;aspect-ratio:1000 / 625;border-radius:18px;overflow:hidden;
+  background:linear-gradient(160deg,#20264c,#171b36);border:2px solid rgba(255,255,255,.08);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.05);touch-action:manipulation;user-select:none;
+}
+.vt-obj{
+  position:absolute;left:0;top:0;width:var(--vt-d);height:var(--vt-d);border-radius:50%;padding:0;border:0;
+  background:radial-gradient(circle at 35% 30%,#eef1ff,#8f99cc);
+  box-shadow:0 4px 10px rgba(0,0,0,.35);will-change:transform;pointer-events:none;
+  display:grid;place-items:center;font-size:max(11px, calc(var(--vt-d) * .44));font-weight:900;line-height:1;color:#171b36;
+  transition:background .25s ease, box-shadow .25s ease;
+}
+.vt-obj.cue{
+  background:radial-gradient(circle at 35% 30%,#ffb3c0,#e11d48);
+  box-shadow:0 0 0 3px #fff, 0 0 22px rgba(251,113,133,.85);animation:vtCue .75s ease-in-out infinite;
+}
+@keyframes vtCue{50%{box-shadow:0 0 0 6px #fff, 0 0 34px rgba(251,113,133,.95)}}
+.vt-field.answering .vt-obj{pointer-events:auto;cursor:pointer}
+.vt-field.answering .vt-obj:hover{box-shadow:0 0 0 3px var(--brand-2), 0 4px 10px rgba(0,0,0,.35)}
+.vt-obj.hit{background:radial-gradient(circle at 35% 30%,#a7f3d0,#10b981);box-shadow:0 0 0 3px #fff, 0 0 26px rgba(52,211,153,.8)}
+.vt-obj.miss{background:radial-gradient(circle at 35% 30%,#fecdd3,#e11d48);color:#fff}
+.vt-obj.reveal{background:radial-gradient(circle at 35% 30%,#ffb3c0,#e11d48);color:#fff;box-shadow:0 0 0 3px #fff, 0 0 0 7px var(--good)}
+.vt-demo{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
+.vt-demo-dot{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  font-size:13px;font-weight:900;color:#171b36;
+  background:radial-gradient(circle at 35% 30%,#eef1ff,#8f99cc);box-shadow:0 3px 8px rgba(0,0,0,.3);
+  transition:background .3s ease, box-shadow .3s ease;
+}
+.vt-demo-dot.cue{background:radial-gradient(circle at 35% 30%,#ffb3c0,#e11d48);box-shadow:0 0 0 3px #fff, 0 0 16px rgba(251,113,133,.8)}
