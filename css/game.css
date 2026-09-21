@@ -644,3 +644,44 @@ body.game-page{min-height:100vh;display:flex;justify-content:center;padding:22px
   transition:background .3s ease, box-shadow .3s ease;
 }
 .vt-demo-dot.cue{background:radial-gradient(circle at 35% 30%,#ffb3c0,#e11d48);box-shadow:0 0 0 3px #fff, 0 0 16px rgba(251,113,133,.8)}
+
+/* ---------- attention storm ---------- */
+.as-arena{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:14px;cursor:pointer;touch-action:manipulation;user-select:none}
+.as-card{
+  /* stays dark in both themes, so it keeps the dark palette's text colours */
+  --text:#eef1ff;--muted:#96a0c8;color:var(--text);
+  width:190px;height:190px;border-radius:30px;display:grid;place-items:center;
+  background:linear-gradient(160deg,#262c57,#1a1f3f);border:3px solid rgba(255,255,255,.12);
+  box-shadow:0 14px 30px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.08);
+  transition:border-color .1s ease, box-shadow .1s ease;
+}
+.as-card.hit{border-color:var(--good);box-shadow:0 0 0 4px rgba(52,211,153,.45), 0 14px 30px rgba(0,0,0,.4)}
+.as-card.fa{border-color:var(--bad);box-shadow:0 0 0 4px rgba(251,113,133,.5), 0 14px 30px rgba(0,0,0,.4)}
+.as-shape{width:128px;height:128px;display:grid;place-items:center}
+.as-shape .as-svg{width:100%;height:100%;display:block}
+.as-shape.in{animation:asIn .09s ease-out}
+@keyframes asIn{0%{opacity:.5;transform:scale(.94)}100%{opacity:1;transform:none}}
+.as-feedback{min-height:20px;font-size:13px;font-weight:700;letter-spacing:.3px;color:var(--muted)}
+.as-feedback.hit{color:var(--good)}
+.as-feedback.fa,.as-feedback.miss{color:var(--bad)}
+/* the star next to the instruction sits on a small dark chip, readable in both themes */
+.as-icon{display:inline-grid;place-items:center;width:24px;height:24px;padding:3px;margin-left:6px;vertical-align:-7px;border-radius:7px;background:#1a1f3f;color:#fbbf24}
+.as-icon-svg{width:100%;height:100%;display:block}
+.as-demo{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap}
+.as-demo-shape{
+  width:38px;height:38px;padding:6px;display:inline-grid;place-items:center;border-radius:10px;
+  background:#1a1f3f;border:1px solid rgba(255,255,255,.1);
+}
+.as-demo-shape .as-svg{width:100%;height:100%;display:block}
+.as-demo-shape.is-target{box-shadow:0 0 0 2px var(--good)}
+.as-demo-shape.big{width:84px;height:84px;padding:14px;border-radius:18px}
+.as-demo-col{display:flex;flex-direction:column;align-items:center;gap:6px}
+.as-demo-col b{font-size:11px;letter-spacing:.4px}
+.as-yes{color:var(--good)}
+.as-no{color:var(--bad)}
+.as-key{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card-hi);font-size:12px;font-weight:800;letter-spacing:1px}
+
+@media (max-width:520px){
+  .as-card{width:156px;height:156px}
+  .as-shape{width:104px;height:104px}
+}

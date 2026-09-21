@@ -437,3 +437,105 @@ test('visual tracking: ability score - faster held speed and more look-alikes sc
   assert.ok(at(300, 8) > at(300, 3), 'the same speed among 8 objects beats among 3');
   assert.ok(at(530, 5, 30) <= 30, 'near-chance accuracy is capped');
 });
+
+/* ----------------------------------------------------- attention storm */
+
+import * as AS from '../js/games/logic/attention-storm-logic.js';
+
+const AS_CFG = {
+  size: 32, targets: 8, lures: 6,
+  lureShapes: ['star5-outline', 'star5-inverted', 'star6'],
+  otherShapes: ['circle', 'triangle', 'square', 'diamond', 'hexagon', 'plus']
+};
+
+test('attention storm: blocks have exact counts and no shortcuts', () => {
+  assert.deepEqual(AS.makeBlock(createRng(3), AS_CFG), AS.makeBlock(createRng(3), AS_CFG));
+  for (let seed = 1; seed <= 500; seed++) {
+    const b = AS.makeBlock(createRng(seed), AS_CFG);
+    assert.equal(b.length, 32);
+    assert.equal(b.filter((s) => s.kind === 'target').length, 8);
+    assert.equal(b.filter((s) => s.kind === 'lure').length, 6);
+    assert.ok(b.every((s) => (s.kind === 'target') === (s.shape === AS.TARGET)), 'only targets are the target star');
+    assert.ok(b.filter((s) => s.kind === 'lure').every((s) => AS_CFG.lureShapes.includes(s.shape)));
+    assert.ok(AS.isWellFormed(b));
+    assert.notEqual(b[0].kind, 'target', 'never a target first');
+    for (let i = 2; i < b.length; i++) {
+      assert.ok(!(b[i].kind === 'target' && b[i - 1].kind === 'target' && b[i - 2].kind === 'target'), 'at most two targets in a row');
+    }
+  }
+});
+
+test('attention storm: every shape draws, and each look-alike differs from the target', () => {
+  for (const s of AS.SHAPES) assert.match(AS.shapeMarkup(s), /^<svg viewBox="0 0 100 100"[^>]*>.+<\/svg>$/);
+  const target = AS.shapeMarkup(AS.TARGET);
+  for (const s of AS.SHAPES.filter((x) => x !== AS.TARGET)) assert.notEqual(AS.shapeMarkup(s), target);
+});
+
+test('attention storm: timings stay humanly possible', () => {
+  for (const { on, off } of AS.LEVELS) {
+    assert.ok(on >= 400, 'every shape is shown for at least 400 ms');
+    assert.ok(on + off >= 700, 'every response window is at least 700 ms');
+  }
+  assert.deepEqual(AS.timingFor(0), AS.LEVELS[0]);
+  assert.deepEqual(AS.timingFor(99), AS.LEVELS[AS.MAX_LEVEL - 1]);
+});
+
+test('attention storm: a response belongs to the shape it was aimed at', () => {
+  const onsets = [1000, 1700, 2400];
+  assert.equal(AS.windowFor(onsets, 1050), -1, 'too early to be a reaction to the first shape');
+  assert.equal(AS.windowFor(onsets, 1100), 0);
+  assert.equal(AS.windowFor(onsets, 1750), 0, 'a slow response just after the next onset still counts for the first');
+  assert.equal(AS.windowFor(onsets, 1800), 1);
+  assert.equal(AS.windowFor(onsets, 2600), 2);
+});
+
+test('attention storm: d-prime - perfect is high, guessing is near zero, and it stays finite', () => {
+  assert.equal(AS.probit(0.5), 0);
+  assert.ok(Math.abs(AS.probit(0.975) - 1.959964) < 1e-6);
+  assert.ok(Math.abs(AS.probit(0.01) + 2.326348) < 1e-6);
+  const perfect = AS.dPrime(24, 24, 0, 72);
+  assert.ok(perfect > 3.5 && Number.isFinite(perfect));
+  assert.ok(Math.abs(AS.dPrime(12, 24, 36, 72)) < 0.1, 'pressing at random');
+  assert.ok(AS.dPrime(24, 24, 72, 72) < 0.1, 'pressing at everything is not sensitivity');
+  assert.equal(AS.dPrime(0, 0, 3, 72), null);
+});
+
+test('attention storm: pace between blocks - faster when clean, slower when struggling', () => {
+  assert.equal(AS.nextLevel(3, { hitRate: 0.9, faRate: 0.05 }), 4);
+  assert.equal(AS.nextLevel(3, { hitRate: 0.75, faRate: 0.15 }), 3);
+  assert.equal(AS.nextLevel(3, { hitRate: 0.5, faRate: 0.05 }), 2);
+  assert.equal(AS.nextLevel(3, { hitRate: 0.95, faRate: 0.4 }), 2, 'pressing at everything slows it down');
+  assert.equal(AS.nextLevel(AS.MAX_LEVEL, { hitRate: 1, faRate: 0 }), AS.MAX_LEVEL);
+  assert.equal(AS.nextLevel(1, { hitRate: 0, faRate: 1 }), 1);
+});
+
+test('attention storm: summary counts hits, misses and both kinds of false alarm; voided shapes are left out', () => {
+  const st = (kind, responded, rt = null, block = 1, level = 3, voided = false) => ({ kind, responded, rt, block, level, voided });
+  const m = AS.summarize([
+    st('target', true, 400), st('target', true, 500), st('target', false), st('lure', true, 380), st('other', true, 300),
+    st('other', false), st('other', false), st('lure', false, null, 2, 4), st('target', true, 450, 2, 4), st('target', false, null, 2, 4, true)
+  ]);
+  assert.equal(m.hits, 3);
+  assert.equal(m.misses, 1);
+  assert.equal(m.lureFalseAlarms, 1);
+  assert.equal(m.otherFalseAlarms, 1);
+  assert.equal(m.falseAlarms, 2);
+  assert.equal(m.correctRejections, 3);
+  assert.equal(m.total, 9, 'the voided shape is not scored');
+  assert.equal(m.accuracy, Math.round((6 / 9) * 100));
+  assert.equal(m.hitRate, 75);
+  assert.equal(m.medianRt, 450);
+  assert.equal(m.levelReached, 4);
+  assert.equal(m.levelEstimate, 4, 'estimated from the blocks after the first');
+  assert.equal(m.voided, 1);
+});
+
+test('attention storm: ability score comes from sensitivity - speed cannot rescue false alarms or misses', () => {
+  const a = abilityFor('attention-storm');
+  const run = (dprime, medianRt, hits = 22, misses = 2) => a.score({ dprime, medianRt, hits, misses, total: 96, levelEstimate: 3 });
+  assert.equal(a.score({ dprime: 3, total: 20, hits: 5, misses: 0 }), null, 'too short to measure');
+  assert.ok(run(4, 450) > run(2, 450), 'better sensitivity scores higher');
+  assert.ok(run(2, 250) < run(3, 600), 'a very fast player with more errors scores below a slower careful one');
+  assert.ok(run(0.6, 200) <= 20, 'near-guessing is capped however fast it is');
+  assert.ok(Math.abs(run(3, 300) - run(3, 700)) <= 10, 'reaction time moves the score by at most 5 either way');
+});

@@ -5,6 +5,7 @@
    game is played at in the Brain Test; practice lets the player choose. */
 
 import { el } from './util.js';
+import { shapeMarkup } from '../games/logic/attention-storm-logic.js';
 
 export const GAMES = [
   {
@@ -528,6 +529,56 @@ export const GAMES = [
         buildDemo(box) {
           box.append(el('div', { class: 'vt-demo' },
             ['1', '2', '3', '4'].map((n) => el('span', { class: 'vt-demo-dot', text: n }))));
+        }
+      }
+    ]
+  },
+  {
+    id: 'attention-storm',
+    name: 'Attention Storm',
+    icon: '🌪️',
+    tagline: 'Shapes flash past. Catch every star - and ignore the look-alikes.',
+    skills: 'Sustained attention · Holding back',
+    module: 'attention-storm.js',
+    locked: false,
+    modes: ['easy', 'medium', 'hard'],
+    category: 'Sustained Attention',
+    minutes: 2,
+    instruction: 'Shapes flash one at a time. Press only for the five-point star - not for the shapes that look like it.',
+    keys: 'Space or tap for the star',
+    tutorial: [
+      {
+        title: 'Shapes flash by',
+        text: 'One shape at a time appears and disappears - a <b>fast stream</b> that keeps going.',
+        buildDemo(box) {
+          const card = el('div', { class: 'as-demo-shape big' });
+          box.append(card);
+          const seq = ['circle', 'triangle', 'star5', 'square', 'diamond', 'hexagon'];
+          let i = 0;
+          const iv = setInterval(() => {
+            card.innerHTML = i % 2 ? '' : shapeMarkup(seq[(i / 2) % seq.length]);
+            i = (i + 1) % (seq.length * 2);
+          }, 450);
+          return () => clearInterval(iv);
+        }
+      },
+      {
+        title: 'Press only for the star',
+        text: 'When the <b>five-point star</b> appears, press <b>Space</b> or tap. Let every other shape pass.',
+        buildDemo(box) {
+          box.append(el('div', { class: 'as-demo' },
+            el('span', { class: 'as-demo-shape big is-target', html: shapeMarkup('star5') }),
+            el('span', { class: 'as-key', text: 'SPACE' })));
+        }
+      },
+      {
+        title: 'Beware the look-alikes',
+        text: 'Some shapes are <b>almost</b> the star. Pressing for them is a <b>false alarm</b>; missing a star counts too. Do well and the stream speeds up.',
+        buildDemo(box) {
+          box.append(el('div', { class: 'as-demo' },
+            ['star5', 'star6', 'star5-outline', 'star5-inverted'].map((sh) => el('span', { class: 'as-demo-col' },
+              el('span', { class: 'as-demo-shape' + (sh === 'star5' ? ' is-target' : ''), html: shapeMarkup(sh) }),
+              el('b', { class: sh === 'star5' ? 'as-yes' : 'as-no', text: sh === 'star5' ? '✓ press' : '✗ pass' })))));
         }
       }
     ]

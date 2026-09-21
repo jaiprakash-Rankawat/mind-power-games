@@ -229,6 +229,28 @@ export const ABILITIES = [
       return Math.round(s);
     },
     metric: (run) => `speed ${run.levelEstimate} held with ${run.objects} objects, ${run.accuracy}% right`
+  },
+  {
+    id: 'sustained-attention',
+    name: 'Sustained Attention',
+    game: 'attention-storm',
+    gameName: 'Attention Storm',
+    icon: '\u{1F32A}️',
+    what: 'Catching every target in a long, fast stream without reacting to look-alikes',
+    /* Sensitivity (d-prime) drives the score: stars caught against false alarms, so
+       pressing at everything and pressing at nothing both score low. Faster paces
+       earn a little credit, and reaction time moves the score by at most 5 points -
+       it can never make up for misses or false alarms. Anchors are our own
+       judgement for this task, not published norms. d' under 1 is near guessing. */
+    score(run) {
+      if (typeof run.dprime !== 'number' || (run.total || 0) < 40 || ((run.hits || 0) + (run.misses || 0)) < 8) return null;
+      const eff = run.dprime + 0.2 * ((run.levelEstimate ?? 3) - 3);
+      let s = curve(eff, [[0, 2], [1, 10], [1.5, 18], [2, 28], [2.5, 39], [3, 50], [3.5, 62], [4, 74], [4.5, 86], [5, 94], [5.5, 98]]);
+      if (typeof run.medianRt === 'number') s += clamp((480 - run.medianRt) / 20, -5, 5);
+      if (run.dprime < 1) s = Math.min(s, 20);
+      return Math.round(clamp(s, 0, 100));
+    },
+    metric: (run) => `${run.hitRate}% of stars caught, ${run.falseAlarms} false alarms, d′ ${run.dprime}`
   }
 ];
 
