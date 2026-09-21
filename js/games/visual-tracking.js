@@ -211,6 +211,7 @@ export function mount(root, ctx) {
       promptEl.innerHTML = 'Follow the <b>red</b> one';
       syncHud(false);
       later(startMoving, CUE_MS);
+      if (document.hidden) pause();             // the tab was left during the last review
     }
 
     function startMoving() {

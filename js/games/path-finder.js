@@ -190,6 +190,7 @@ export function mount(root, ctx) {
       runTimer(limit);
       later(() => resolve(false), limit);
       syncHud(false);
+      if (document.hidden) pause();             // the tab was left during the last review
     }
 
     function render() {

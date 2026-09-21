@@ -1,7 +1,7 @@
 # Mind Power Games
 
-A Chrome extension (Manifest V3) with seven short cognitive games. Take the
-**Brain Test** - all seven in a fixed order, about 12 minutes, ending in a Brain
+A Chrome extension (Manifest V3) with eleven short cognitive games. Take the
+**Brain Test** - all eleven in a fixed order, about 19 minutes, ending in a Brain
 Profile - or practise any game on its own. No account, no network: everything stays
 on your machine.
 
@@ -48,10 +48,14 @@ published results for similar tasks - not a comparison with other players).
 | 5 | Task Switch | Flexibility | switch cost: slowdown right after the rule changes |
 | 6 | Number Pattern | Reasoning | difficulty level held by an adaptive staircase |
 | 7 | Spatial Rotation | Spatial Reasoning | median time / accuracy; ms per degree of rotation |
+| 8 | Sequence Recall | Sequence Memory | span: longest digit sequence typed back perfectly (backwards on Hard) |
+| 9 | Visual Tracking | Visual Tracking | speed held by a staircase while following one object among look-alikes |
+| 10 | Attention Storm | Sustained Attention | d-prime (stars caught vs false alarms); reaction time adjusts it by at most 5 |
+| 11 | Path Finder | Planning | level held on a ladder of mazes, adjusted by route efficiency |
 
 **Two ways to play:**
 
-- **Brain Test** (`test.html`, from "Start Brain Test" in the popup) - all seven at
+- **Brain Test** (`test.html`, from "Start Brain Test" in the popup) - all eleven at
   fixed settings, ending in a Brain Profile: an overall performance score, the seven
   ability scores and their shape. Progress is saved after every game, so a closed
   tab resumes at the next game. Only the first test of the day, with no restarted
@@ -191,6 +195,33 @@ mirror image can never be matched by turning, and every angle appears equally of
 with each answer. Response time by angle is recorded - the classic mental-rotation
 slope.
 
+### 8. Sequence Recall (digit span)
+Digits appear one at a time, then you type them back in order. A correct answer adds
+a digit; a miss retries the same length with new digits; two misses in a row end the
+round. Sequences never repeat a digit twice in a row or run three consecutive numbers.
+Easy is paced at 1.2s per digit, Medium at 1s; **Hard is Reverse Recall** (type them
+last digit first). Keyboard: `1-9`, `Backspace` to undo, `Space` pause, `Esc` quit.
+
+### 9. Visual Tracking (multiple-object tracking)
+One object turns red, then every object turns identical and they all move; when they
+stop, pick the one that was red (click it or press its number). Motion is simulated
+from a seed, so objects provably stay in bounds, never touch and never park. Two right
+in a row speeds up the next round; a miss slows it down. Easy 3 objects, Medium 5,
+Hard 8 with sudden turns.
+
+### 10. Attention Storm (continuous performance)
+Shapes flash one at a time; press `Space` (or tap) only for the five-point star. Look-
+alikes - a six-point star, an outline star, an upside-down star - test holding back.
+Three blocks of 32; the pace speeds up after a clean block. Shapes are SVG, so they
+look identical on every system. `P` pauses.
+
+### 11. Path Finder (planning)
+Walk from the start to the flag one square at a time - every step counts, so plan
+first. A perfect route climbs a ladder of bigger, busier mazes (5x5 to 10x10); an
+unsolved puzzle drops a level. **Hard adds mud** that costs 2 steps, and the most
+direct route is usually a trap. Every puzzle is proven solvable (tested on 3,000
+generated puzzles against an independent solver). Arrow keys / WASD or click.
+
 ## Adding a game
 
 1. Create `js/games/<id>.js` exporting `mount(root, ctx)`. Put any stimulus
@@ -228,14 +259,14 @@ js/core/charts.js  hand-built SVG radar, line chart and meter (no chart library)
 js/core/session.js Brain Test sessions: order, persistence, resume, eligibility
 js/core/result.js  standard GameResult envelope (wraps each game's own result)
 js/core/rng.js     seeded random numbers (every stimulus reproducible from a seed)
-js/core/game-kit.js shared setup / countdown / results screens for games 4-7
+js/core/game-kit.js shared setup / countdown / results screens for games 4-11
 js/core/analytics.js local-only event log (no network)
-js/games/logic/    pure, unit-tested logic for games 4-7
+js/games/logic/    pure, unit-tested logic for games 4-11
 test.html/js       the Brain Test runner
 profile.html/js    full brain profile page
 css/viz.css        chart styles shared by popup and profile
 tests/             npm test suites + dev-only browser harness (not shipped)
-js/games/          the seven games
+js/games/          the eleven games
 css/               theme + page styles
 icons/             generated PNGs
 INSTALL.md         how to load, update, package and publish

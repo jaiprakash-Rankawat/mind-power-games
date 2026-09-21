@@ -1,7 +1,7 @@
 # Brain Test Architecture
 
-Mind Power Games is a Manifest V3 Chrome extension with seven short cognitive
-games. They can be played one at a time (**Practice**) or as a fixed, seven-game
+Mind Power Games is a Manifest V3 Chrome extension with eleven short cognitive
+games. They can be played one at a time (**Practice**) or as a fixed, eleven-game
 **Brain Test** that produces a Brain Profile.
 
 The code is plain JavaScript (ES modules). There is no bundler, no framework, no
@@ -19,7 +19,7 @@ directly.
 
 ---
 
-## 1. The seven games
+## 1. The eleven games
 
 Registry order is test order (`js/core/games.js`).
 
@@ -32,8 +32,12 @@ Registry order is test order (`js/core/games.js`).
 | 5 | Task Switch | `js/games/task-switch.js` | Cognitive flexibility | Medium: 36 cards, 35% switches | Switch cost (ms) |
 | 6 | Number Pattern | `js/games/number-pattern.js` | Fluid reasoning | Medium: 12 patterns, starts at level 2 | Level held (adaptive) |
 | 7 | Spatial Rotation | `js/games/spatial-rotation.js` | Visuospatial reasoning | Medium: 16 pairs, turns 45–180° | Median RT ÷ accuracy; ms per degree |
+| 8 | Sequence Recall | `js/games/sequence-recall.js` | Sequence memory (digit span) | Medium: forward, one digit per second, from 3 | Span |
+| 9 | Visual Tracking | `js/games/visual-tracking.js` | Visual tracking (multiple-object tracking) | Medium: 5 objects, 5s of motion, 10 rounds | Speed held |
+| 10 | Attention Storm | `js/games/attention-storm.js` | Sustained attention, inhibitory control | Medium: 3 blocks of 32 shapes, pace adapts | d′ |
+| 11 | Path Finder | `js/games/path-finder.js` | Planning | Medium: 8 mazes, level ladder from 6×6 | Level held, route efficiency |
 
-The whole test takes about 12 minutes. Each game has a `minutes` estimate in the registry, and the total is computed from those.
+The whole test takes about 19 minutes (12 before protocol 2). Each game has a `minutes` estimate in the registry, and the total is computed from those.
 
 ### Why these seven
 
@@ -49,6 +53,29 @@ That left five uncovered categories and four new slots:
 - **Memory Grid appears in profiles as "Visual Memory"**, not as spatial reasoning, so the label matches what it actually measures.
 
 Visual Search could be added later as a practice-only eighth game.
+
+### Protocol 2: four more games
+
+Sequence Recall, Visual Tracking, Attention Storm and Path Finder were added as games
+8-11 (`PROTOCOL_VERSION` 2). They come **after** the original seven, so those keep the
+same position in the test - and the same fatigue - as before. The test grows from
+about 12 to about 19 minutes; later games are played by a more tired player, which
+should be kept in mind when comparing abilities.
+
+- **Sequence Recall** overlaps with Memory Grid (span) and N-Back (working memory).
+  It measures memory for *order* of easily named items (digit span), where Memory
+  Grid measures places and N-Back measures updating. It is shown as **Sequence
+  Memory**.
+- **Attention Storm** overlaps with Color Clash (attention). It is a continuous-
+  performance task: staying on task through a long stream and holding back for
+  look-alikes, rather than resisting one strong interference. It is shown as
+  **Sustained Attention**.
+- **Visual Tracking** is multiple-object tracking. The target is shown red, then
+  **every object turns identical before moving** - if it stayed red, the question
+  at the end could be answered without tracking anything.
+- **Path Finder** measures planning. It draws on spatial skills (Spatial Reasoning)
+  and problem solving (Reasoning), but its signature is choosing a route *before*
+  committing to it: every step counts, including steps back.
 
 ### Known overlaps (to keep in mind when interpreting)
 
@@ -77,8 +104,8 @@ js/core/
   game-kit.js     shared setup / countdown / results screens for the newer games
   arcade.js fx.js audio.js charts.js util.js storage.js sound-control.js
 
-js/games/        the seven games, each exporting mount(root, ctx)
-js/games/logic/  pure, DOM-free logic for the four newer games (unit-tested)
+js/games/        the eleven games, each exporting mount(root, ctx)
+js/games/logic/  pure, DOM-free logic for the eight newer games (unit-tested)
 ```
 
 ### The game contract
@@ -153,6 +180,12 @@ raw trials -> native result (the game's own metrics + points)
 | Flexibility | switch cost, minus an accuracy penalty | ~200ms |
 | Reasoning | level held (1–5) | ~3 |
 | Spatial Reasoning | median RT ÷ accuracy | ~2100ms |
+| Sequence Memory | span (+2 when recalled backwards) | 6.5 digits |
+| Visual Tracking | speed held × credit for the number of objects | 300 units/s* |
+| Sustained Attention | d′ (+ pace credit; reaction time moves it by at most 5 points) | d′ 3.0* |
+| Planning | level held, ± route efficiency; +0.5 for mud puzzles | level ~3.3* |
+
+\* Our own judgement for these tasks - there are no comparable published results to anchor to. Treat these three as provisional until norms exist (section 13).
 
 These anchors are **rough reference points**, not norms. See section 13.
 
@@ -164,7 +197,7 @@ A session (`js/core/session.js`) is saved to `chrome.storage.local`:
 
 ```js
 {
-  id, kind: 'brain-test', protocolVersion: 1,
+  id, kind: 'brain-test', protocolVersion: 2,   // 1 = the seven-game test
   seed,                         // every game's stimuli derive from this
   order: [7 game ids], index,   // next game to play
   status: 'in_progress' | 'completed' | 'abandoned',
@@ -175,6 +208,9 @@ A session (`js/core/session.js`) is saved to `chrome.storage.local`:
   summary: { overall, abilities[], measured, total, interruptions, eligible, reasons[], scoringVersion }
 }
 ```
+
+A session keeps the order it was created with, so a session started under protocol 1
+still resumes, finishes and is scored with its own seven games.
 
 **It is saved when a game starts and when it ends.** What happens after an interruption:
 
@@ -234,6 +270,10 @@ The envelope **wraps** the native result rather than replacing it, so nothing a 
 | Task Switch | digit, rule, repeat/switch, correct answer, congruent, response, correct, RT, input; seed |
 | Number Pattern | level, rule family, the six numbers, answer, options, response, correct, RT, input; seed |
 | Spatial Rotation | shape cells, mirrored?, angle, direction, answer, response, correct, RT, input; seed |
+| Sequence Recall | per sequence: length, direction, the digits, expected answer, response, positions right, time of every key, undos, timed out, actual onset of every digit; pauses, voided sequences; seed |
+| Visual Tracking | per round: trial seed, speed level and speed, objects, duration, target, response (object and number), correct, RT, input; motion settings; seed. Trajectories are regenerated from the trial seed, not stored |
+| Attention Storm | per shape: block, level, kind (target / lure / other), shape, onset, responded, RT, input, outcome; per-block hit and false-alarm rates; extra presses; seed |
+| Path Finder | per puzzle: the grid, start, goal, best cost and steps, trap flag, the walked path, cost, moves, excess, planning time (to the first move), total time, bumps, input; seed |
 
 ---
 
@@ -247,6 +287,10 @@ How each newer game guarantees one objectively correct answer (all enforced in `
 - **Task Switch** never shows a 5, which is neither low nor high. Every digit has one answer under each rule. No run of the same rule is longer than 5, and each sequence contains enough switches to measure a cost.
 - **Number Pattern** runs each generated series through eight rule families (arithmetic, geometric, affine, second-order, doubling differences, interleaved, Fibonacci-like, alternating operations). If **any** family that explains the six shown numbers predicts a different next number, the item is discarded. Distractors are never predicted by any fitting family. **Tested on 10,000 generated items.** The guarantee is relative to these eight families.
 - **Spatial Rotation** only uses shapes that are chiral (the mirror image matches no rotation) and have no rotational symmetry, so "same" and "mirror" can never look identical and the displayed angle is the real one. Angle × answer combinations are exactly balanced. Tested on 450 generated trial sets.
+- **Sequence Recall** never shows a digit twice in a row or three consecutive numbers (1-2-3), and schedules every digit from one start time, so presentation cannot drift (measured within ~10 ms in the browser).
+- **Visual Tracking** simulates motion at a fixed 60 Hz step from a seed. Tested on 384 trials across every speed and mode: objects stay inside the arena, never touch (centres at least 2r + 4 apart), keep their speed (under 0.5% of frames below half speed) and never linger in one small area for 4 seconds.
+- **Attention Storm** has exact target / lure / other counts per block, never starts with a target and never shows three targets in a row. A response belongs to a shape from 100 ms after its onset until 100 ms after the next onset, so slow-but-genuine responses are never lost. The fastest pace still shows each shape for 400 ms with a 700 ms window.
+- **Path Finder** accepts a maze only after a shortest-path search (bucket-queue Dijkstra) finds a route; after a bounded number of tries it carves a route first. **Tested on 3,000 generated puzzles against an independent brute-force solver**: every one is solvable and the best cost it scores against is the true best. On Hard, the most direct route costs more than the cheapest in at least 90% of puzzles (a trap).
 - **Reaction Speed** balances choice targets exactly across positions and randomises the wait before each signal (0.9–2.6s simple, 0.7–1.8s choice) so it can't be anticipated. Responses under 100ms count as guesses.
 
 ---
@@ -258,6 +302,10 @@ Every game has Easy / Medium / Hard for practice, and **one fixed official setti
 - **N-Back** adapts by block (Jaeggi protocol): ≤2 errors → N+1, ≥5 errors → N−1.
 - **Number Pattern** adapts by item (two right in a row → harder rule family, one wrong → easier), settling near 70% correct.
 - **Memory Grid** grows the path by one tile per cleared level.
+- **Sequence Recall** adds a digit after each correct answer; two misses in a row end the round.
+- **Visual Tracking** speeds up after two right in a row and slows down after a miss (settles near 70%).
+- **Attention Storm** changes pace between blocks: faster after at least 85% caught with at most 10% false alarms, slower under 60% caught or over 30% false alarms.
+- **Path Finder** climbs a six-step ladder (5×5 to 10×10) after a perfect route and drops after an unsolved puzzle.
 - The others use fixed parameters per mode (number of choices, time limits, switch rate, shape size, angles).
 
 ---
@@ -318,6 +366,7 @@ For a fair Daily Test where everyone sees the same stimuli, derive the session s
 | `game_started` / `game_completed` | official games |
 | `practice_started` / `practice_completed` | practice games (started = opened from the popup or profile) |
 | `result_shared` | "Copy result" on the Brain Profile |
+| `game_abandoned` | a practice round of one of the four newest games is quit with Esc (`trials_completed`, `duration_ms`) |
 
 **Properties:** `game_id`, `session_id`, `difficulty`, `score`, `start_time`, `completion_time`, attempt numbers.
 
@@ -345,7 +394,7 @@ Until norms exist, the UI keeps to neutral language ("Your performance score was
 
 | Command | What it checks |
 |---------|----------------|
-| `npm test` | 32 unit tests (Node built-in runner): scoring baseline for the original games, rng / stats / result envelope / session state machine and eligibility, the migration regression, and correctness of every newer game's generator |
+| `npm test` | 64 unit tests (Node built-in runner): scoring baseline for the original games, rng / stats / result envelope / session state machine and eligibility, the migration regression, correctness of every newer game's generator, and the eleven-game protocol (`tests/brain-test.test.mjs`) |
 | `npm run validate` | manifest, icons, CSP (no inline scripts or `eval`), every asset path and import, registry → module |
 | `npm run build` | validate, then write `dist/mind-power-games-v<version>.zip` |
 | `tests/browser/harness.html` | dev-only page (not shipped) for mounting any game with an official context from the console |
@@ -356,3 +405,11 @@ Until norms exist, the UI keeps to neutral language ("Your performance score was
 - refresh mid-game → resume → the restart is recorded and the test is unranked
 - "Start over" → abandoned, with the attempt count incremented
 - double-clicking any runner button → exactly one session and one game mount
+
+**Verified in the browser for v1.2.0 (the four new games):**
+- each new game in practice mode, played through by an in-page driver: correct answers, wrong answers, timeouts, pause (Space / P / tab hidden), Esc to quit (with `game_abandoned`), light and dark themes, a 400px-wide window
+- counts recorded by the game match what the driver did (e.g. Attention Storm: 20 hits, 4 misses, 5 look-alike false alarms planned and recorded)
+- Sequence Recall onset timing within 11 ms; Visual Tracking animation at a 14 ms median frame gap, no frame over 21 ms
+- the Brain Test resuming at game 8 of 11 and playing the four new games in official mode to the Brain Profile (11 rows, overall = mean), with an interrupted game restarted and the session marked unranked
+- a completed protocol-1 session still showing its own seven games and overall score
+- all eleven games start, and popup, profile and test pages load, with no console errors

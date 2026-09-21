@@ -197,6 +197,7 @@ export function mount(root, ctx) {
       resetTimer();
       syncHud(false);
       present();
+      if (document.hidden) pause();             // the tab was left during the last review
     }
 
     function present() {

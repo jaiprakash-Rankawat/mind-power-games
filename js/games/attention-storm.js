@@ -175,6 +175,7 @@ export function mount(root, ctx) {
       if (from >= stims.length) { endBlock(); return; }
       for (let k = from; k < stims.length; k++) at(start + (k - from) * (on + off), () => show(k, on, off));
       syncHud(false);
+      if (document.hidden) pause();             // never run the stream in a background tab
     }
 
     function show(k, on, off) {
