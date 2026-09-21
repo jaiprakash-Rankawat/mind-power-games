@@ -1,0 +1,170 @@
+body.popup{width:370px;padding:16px 14px 12px}
+
+.hub-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.hub-head h1{font-size:16px;letter-spacing:.2px}
+.logo{
+  width:38px;height:38px;flex:none;border-radius:11px;
+  background:linear-gradient(140deg,#20264c,#161a35);
+  border:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px;
+}
+.dot{border-radius:50%;display:block}
+.d1{background:#ff4d4d}.d2{background:#4d8bff}.d3{background:#ffd23f}.d4{background:#2ee88a}
+
+/* brain score: the one hero number in the popup */
+.brain-card{
+  position:relative;overflow:hidden;display:flex;flex-direction:column;gap:2px;width:100%;
+  text-align:left;padding:14px 16px 13px;margin-bottom:16px;border-radius:18px;
+  background:
+    radial-gradient(220px 140px at 90% 0%, rgba(124,92,255,.35), transparent 70%),
+    linear-gradient(160deg,#232a55,#1a1f3d);
+  border:1px solid rgba(124,92,255,.35);
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+  transition:transform .13s ease,border-color .15s ease;
+}
+.brain-card:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.7)}
+.bc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bc-label{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:650}
+.bc-figure{
+  font-size:56px;font-weight:800;line-height:1.05;letter-spacing:-1.5px;
+  background:linear-gradient(135deg,#c4b5ff,#7c5cff 60%,#22d3ee);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.bc-status{font-size:12px;color:var(--text)}
+.bc-link{font-size:11.5px;color:var(--brand-2);margin-top:6px;font-weight:600}
+
+.section-label{
+  font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;
+  color:var(--muted);font-weight:650;margin:0 2px 8px;
+}
+
+.game-list{display:flex;flex-direction:column;gap:9px}
+
+.game-card{
+  display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:12px;
+  transition:transform .13s ease,border-color .15s ease,background .15s ease;
+}
+.game-card:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.55);background:var(--card-hi)}
+
+.gc-icon{
+  width:40px;height:40px;flex:none;border-radius:12px;
+  display:grid;place-items:center;font-size:19px;
+  background:linear-gradient(140deg,rgba(124,92,255,.35),rgba(34,211,238,.18));
+  border:1px solid var(--line);
+}
+.gc-body{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.gc-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.gc-title{font-size:14px;font-weight:650}
+.gc-score{font-size:19px;font-weight:800;line-height:1}
+.gc-ability{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.3px;margin-bottom:2px}
+.gc-tag{display:block;font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px}
+.game-card .meter{height:6px}
+
+.locked-row{
+  display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);
+  color:var(--muted);font-size:12px;
+}
+.lr-icon{font-size:14px;opacity:.6}
+.lr-name{font-weight:600;color:var(--text);opacity:.7}
+.lr-skill{flex:1;font-size:11px}
+
+.hub-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:14px;padding-top:10px;border-top:1px solid var(--line);
+  font-size:11px;color:var(--muted);
+}
+.link-btn.danger{color:var(--bad);font-weight:700}
+
+/* ---------- Brain Test entry (the primary action) ---------- */
+.test-card{
+  display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;
+  padding:13px 16px;margin-bottom:10px;border-radius:18px;
+  background:linear-gradient(135deg,#7c5cff,#5b7bff 55%,#22b8d6);
+  box-shadow:0 12px 28px rgba(124,92,255,.35);color:#fff;
+  transition:transform .13s ease,filter .15s ease;
+}
+.test-card:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.tc-top{display:flex;justify-content:space-between;align-items:center}
+.tc-label{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800;opacity:.9}
+.tc-meta{font-size:10.5px;opacity:.85}
+.tc-cta{font-size:19px;font-weight:800;letter-spacing:.2px}
+.tc-latest{font-size:11.5px;opacity:.9}
+
+/* compact performance card */
+.brain-card{margin-bottom:14px;padding:11px 14px}
+.bc-row{display:flex;align-items:center;gap:14px}
+.bc-row .bc-figure{font-size:42px}
+.bc-side{display:flex;flex-direction:column;gap:3px}
+.bc-side .bc-link{margin-top:0}
+
+/* practice: two-column tiles */
+/* minmax(0,1fr): plain 1fr would grow to fit the no-wrap labels and overflow the popup */
+.game-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.game-card{flex-direction:column;align-items:stretch;gap:5px;padding:10px 11px;min-width:0}
+.game-card .gc-row{display:flex;align-items:center;gap:7px}
+.game-card .gc-icon{width:26px;height:26px;border-radius:8px;font-size:14px}
+.game-card .gc-title{font-size:12.5px;flex:1;min-width:0;line-height:1.25}
+.game-card .gc-row2{display:flex;justify-content:space-between;align-items:flex-end;gap:6px}
+.game-card .gc-row2 .gc-ability{min-width:0}
+.game-card .gc-score{font-size:15px}
+/* wraps rather than truncating - 'provisional' is information, not decoration */
+.game-card .gc-ability{margin:0;line-height:1.35}
+.game-list .locked-row{grid-column:1 / -1}
+
+/* ---------- light mode ---------- */
+[data-theme="light"] .logo{
+  background:linear-gradient(140deg,#e8e6f8,#f0eeff);
+  border-color:var(--line);
+}
+[data-theme="light"] .test-card{
+  background:linear-gradient(135deg,#7c5cff,#5b7bff 55%,#22b8d6);
+  box-shadow:0 12px 28px rgba(109,74,255,.18);
+}
+[data-theme="light"] .brain-card{
+  background:
+    radial-gradient(220px 140px at 90% 0%, rgba(109,74,255,.18), transparent 70%),
+    linear-gradient(160deg,#f0eeff,#ffffff);
+  border-color:rgba(109,74,255,.22);
+  box-shadow:0 12px 28px rgba(0,0,0,.06);
+}
+[data-theme="light"] .brain-card:hover{border-color:rgba(109,74,255,.5)}
+[data-theme="light"] .game-card{
+  background:var(--card);border-color:var(--line);
+}
+[data-theme="light"] .game-card:hover{background:var(--card-hi);border-color:rgba(109,74,255,.35)}
+[data-theme="light"] .gc-icon{
+  background:linear-gradient(140deg,rgba(109,74,255,.12),rgba(14,165,233,.08));
+}
+[data-theme="light"] .hub-foot{border-top-color:var(--line)}
+
+/* theme toggle in popup */
+.theme-btn{
+  width:30px;height:30px;display:grid;place-items:center;
+  font-size:16px;padding:0;border-radius:8px;flex:none;
+  transition:transform .2s cubic-bezier(.34,1.5,.64,1);
+}
+.theme-btn:hover{transform:scale(1.15) rotate(20deg)}
+
+/* ---------- entrance animations ---------- */
+.test-card,
+.brain-card,
+.game-card,
+.hub-foot{opacity:0;animation:fadeSlideUp .5s cubic-bezier(.2,.8,.3,1) forwards}
+.test-card{animation-delay:.05s}
+.brain-card{animation-delay:.12s}
+.game-card{animation-delay:calc(.18s + var(--i,0) * .04s)}
+.hub-foot{animation-delay:.55s}
+
+.logo .dot{animation:breathe 3s ease-in-out infinite}
+.logo .d1{animation-delay:0s}
+.logo .d2{animation-delay:.75s}
+.logo .d3{animation-delay:1.5s}
+.logo .d4{animation-delay:2.25s}
+
+.bc-figure{
+  background-size:200% auto;
+  animation:shimmer 3.5s linear infinite;
+}

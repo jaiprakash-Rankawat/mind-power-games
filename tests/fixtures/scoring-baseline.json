@@ -1,0 +1,2321 @@
+{
+ "cases": [
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 45,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 45,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 45,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 7
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 45,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 45,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 45,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 60,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 93
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 60,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 47
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 60,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 60,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 8
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 60,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 60,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 80,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 80,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 76
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 80,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 43
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 80,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 23
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 80,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 8
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 80,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 92,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 92,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 89
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 92,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 56
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 92,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 32
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 92,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 12
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 92,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 4
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 97,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 97,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 91
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 97,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 61
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 97,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 37
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 97,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 16
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 97,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 6
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 93
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 65
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 40
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 18
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 7
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 45,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 45,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 45,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 11
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 45,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 4
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 45,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 45,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 60,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 60,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 61
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 60,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 29
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 60,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 12
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 60,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 4
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 60,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 80,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 80,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 89
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 80,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 56
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 80,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 32
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 80,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 12
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 80,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 4
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 92,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 92,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 96
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 92,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 70
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 92,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 45
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 92,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 22
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 92,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 8
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 97,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 97,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 97,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 76
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 97,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 49
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 97,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 25
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 97,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 10
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 100,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 100,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 100,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 79
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 100,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 53
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 100,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 27
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "medium",
+    "accuracy": 100,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 10
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 45,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 45,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 20
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 45,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 18
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 45,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 8
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 45,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 45,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 60,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 60,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 73
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 60,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 40
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 60,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 21
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 60,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 8
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 60,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 3
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 80,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 80,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 95
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 80,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 69
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 80,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 43
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 80,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 21
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 80,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 8
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 92,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 92,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 92,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 82
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 92,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 57
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 92,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 30
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 92,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 11
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 97,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 97,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 97,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 87
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 97,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 63
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 97,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 35
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 97,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 14
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 100,
+    "avgRt": 300,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 100,
+    "avgRt": 500,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 98
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 100,
+    "avgRt": 700,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 89
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 100,
+    "avgRt": 900,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 66
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 100,
+    "avgRt": 1200,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 38
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "hard",
+    "accuracy": 100,
+    "avgRt": 1600,
+    "correct": 30,
+    "wrong": 3
+   },
+   "expected": 16
+  },
+  {
+   "ability": "focus",
+   "run": {
+    "mode": "easy",
+    "accuracy": 100,
+    "avgRt": 500,
+    "correct": 5,
+    "wrong": 0
+   },
+   "expected": null
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 0
+   },
+   "expected": 3
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 1
+   },
+   "expected": 3
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 2
+   },
+   "expected": 8
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 3
+   },
+   "expected": 18
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 4
+   },
+   "expected": 32
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 5
+   },
+   "expected": 45
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 6
+   },
+   "expected": 57
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 7
+   },
+   "expected": 70
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 8
+   },
+   "expected": 82
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 9
+   },
+   "expected": 91
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 10
+   },
+   "expected": 96
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "easy",
+    "span": 12
+   },
+   "expected": 99
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 0
+   },
+   "expected": 3
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 1
+   },
+   "expected": 6
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 2
+   },
+   "expected": 13
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 3
+   },
+   "expected": 25
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 4
+   },
+   "expected": 39
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 5
+   },
+   "expected": 50
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 6
+   },
+   "expected": 64
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 7
+   },
+   "expected": 76
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 8
+   },
+   "expected": 87
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 9
+   },
+   "expected": 94
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 10
+   },
+   "expected": 97
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "medium",
+    "span": 12
+   },
+   "expected": 99
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 0
+   },
+   "expected": 3
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 1
+   },
+   "expected": 8
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 2
+   },
+   "expected": 18
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 3
+   },
+   "expected": 32
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 4
+   },
+   "expected": 45
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 5
+   },
+   "expected": 57
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 6
+   },
+   "expected": 70
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 7
+   },
+   "expected": 82
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 8
+   },
+   "expected": 91
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 9
+   },
+   "expected": 96
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 10
+   },
+   "expected": 98
+  },
+  {
+   "ability": "visual-memory",
+   "run": {
+    "mode": "hard",
+    "span": 12
+   },
+   "expected": 99
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 1,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 11
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 1,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 14
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 1,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 15
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 1,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 21
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 1,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 24
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 2,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 2,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 35
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 2,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 38
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 2,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 44
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 2,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 48
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 3,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 3,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 59
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 3,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 62
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 3,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 67
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 3,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 69
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 4,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 4,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 78
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 4,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 80
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 4,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 83
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 4,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 84
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 5,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 5,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 90
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 5,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 91
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 5,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 93
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "easy",
+    "peakN": 5,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 93
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 1,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 14
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 1,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 19
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 1,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 22
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 1,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 28
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 1,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 31
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 2,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 2,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 42
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 2,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 45
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 2,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 51
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 2,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 55
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 3,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 3,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 65
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 3,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 67
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 3,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 72
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 3,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 75
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 4,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 4,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 82
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 4,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 83
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 4,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 86
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 4,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 88
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 5,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 5,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 92
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 5,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 93
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 5,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 94
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "medium",
+    "peakN": 5,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 95
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 1,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 1,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 31
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 1,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 33
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 1,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 39
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 1,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 43
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 2,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 2,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 54
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 2,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 57
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 2,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 63
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 2,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 66
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 3,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 3,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 74
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 3,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 76
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 3,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 81
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 3,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 82
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 4,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 4,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 87
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 4,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 89
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 4,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 91
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 4,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 92
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 5,
+    "dprime": 0.5,
+    "trials": 37
+   },
+   "expected": 25
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 5,
+    "dprime": 1.5,
+    "trials": 37
+   },
+   "expected": 95
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 5,
+    "dprime": 2,
+    "trials": 37
+   },
+   "expected": 96
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 5,
+    "dprime": 3,
+    "trials": 37
+   },
+   "expected": 97
+  },
+  {
+   "ability": "working-memory",
+   "run": {
+    "mode": "hard",
+    "peakN": 5,
+    "dprime": 3.9,
+    "trials": 37
+   },
+   "expected": 97
+  }
+ ],
+ "aggregates": [
+  {
+   "spans": [
+    6
+   ],
+   "expected": {
+    "score": 57,
+    "runs": 1,
+    "provisional": true
+   }
+  },
+  {
+   "spans": [
+    5,
+    7
+   ],
+   "expected": {
+    "score": 58,
+    "runs": 2,
+    "provisional": true
+   }
+  },
+  {
+   "spans": [
+    5,
+    5,
+    9,
+    5,
+    5
+   ],
+   "expected": {
+    "score": 45,
+    "runs": 5,
+    "provisional": false
+   }
+  },
+  {
+   "spans": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "expected": {
+    "score": 57,
+    "runs": 4,
+    "provisional": false
+   }
+  },
+  {
+   "spans": [
+    9,
+    9,
+    9,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+   ],
+   "expected": {
+    "score": 45,
+    "runs": 13,
+    "provisional": false
+   }
+  },
+  {
+   "spans": [],
+   "expected": {
+    "score": null,
+    "runs": 0,
+    "provisional": true
+   }
+  }
+ ]
+}

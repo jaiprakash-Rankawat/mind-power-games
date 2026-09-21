@@ -1,0 +1,60 @@
+/* Chart + meter styles shared by the profile page and the popup.
+   Data marks: brand accent #7c5cff (passes the lightness, chroma and 3:1 contrast
+   checks against the #1a1f3d card surface). Grid, axes and bands stay recessive;
+   all text uses text tokens, never the series colour. */
+
+.viz{position:relative}
+.viz svg{display:block;overflow:visible}
+
+.viz-grid{fill:none;stroke:rgba(255,255,255,.09);stroke-width:1}
+.viz-band{fill:rgba(255,255,255,.045)}
+.viz-area{fill:rgba(124,92,255,.14);stroke:none}
+.viz-line{fill:none;stroke:#7c5cff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.viz-dot{fill:#7c5cff;stroke:var(--card);stroke-width:2}
+.viz-hit{fill:transparent;cursor:pointer;outline:none}
+.viz-hit:focus-visible{stroke:var(--brand-2);stroke-width:2}
+.viz svg:focus-visible{outline:2px solid var(--brand-2);outline-offset:4px;border-radius:6px}
+
+.viz-axis-label{fill:var(--text);font-size:12.5px;font-weight:650}
+.viz-axis-value{fill:var(--muted);font-size:12px}
+.viz-axis-muted{fill:var(--muted);font-size:11px;opacity:.75}
+.viz-tick{fill:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums}
+.viz-end-label{fill:var(--text);font-size:12.5px;font-weight:700}
+
+.viz-cross{stroke:rgba(255,255,255,.32);stroke-width:1;opacity:0}
+.viz-marker{opacity:0}
+svg.hovering .viz-cross,
+svg.hovering .viz-marker{opacity:1}
+
+.viz-tip{
+  position:absolute;left:0;top:0;transform:translate(-50%,-100%);pointer-events:none;
+  opacity:0;transition:opacity .12s ease;white-space:nowrap;z-index:5;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  padding:6px 11px;border-radius:10px;background:#0f1227;border:1px solid var(--line);
+  box-shadow:0 10px 24px rgba(0,0,0,.45);
+}
+.viz-tip.on{opacity:1}
+.viz-tip-value{font-size:15px;color:var(--text)}
+.viz-tip-label{font-size:10.5px;color:var(--muted)}
+
+.viz-empty{color:var(--muted);font-size:13px;text-align:center;padding:48px 12px;margin:0}
+.viz-caption{color:var(--muted);font-size:11px;margin:8px 0 0}
+
+/* 0-100 meter: fill in the accent, track a dim step of the same hue */
+.meter{position:relative;display:block;height:8px;border-radius:99px;background:rgba(124,92,255,.16);overflow:hidden}
+.meter-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:#7c5cff;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.meter-band{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.13);pointer-events:none}
+.meter.empty{background:rgba(255,255,255,.06)}
+
+/* signed change: the arrow and words carry direction, colour only reinforces it */
+.delta{font-size:12px;font-weight:650;color:var(--muted)}
+.delta.up{color:var(--good)}
+.delta.down{color:var(--bad)}
+
+.pill{
+  display:inline-block;font-size:9.5px;letter-spacing:.7px;text-transform:uppercase;font-weight:700;
+  padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)
+}
+
+/* ---------- light mode ---------- */
+[data-theme="light"] .viz-tip{background:#1a1c2e;color:#f4f5fb}

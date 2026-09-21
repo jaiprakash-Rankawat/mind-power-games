@@ -1,0 +1,98 @@
+/* Brain Test runner. Built from the same tokens, panels and buttons as the games,
+   so the seven games read as one product. */
+
+.bt-kicker{
+  font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin:0 0 2px;
+}
+.shell-title .bt-kicker{margin-bottom:2px}
+
+/* progress: one segment per game */
+.bt-progress{display:flex;gap:6px;margin:-4px 0 18px}
+.bt-seg{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.08);transition:background .3s ease}
+.bt-seg.done{background:linear-gradient(90deg,var(--brand),#5b7bff)}
+.bt-seg.now{background:rgba(124,92,255,.45);box-shadow:0 0 0 1px rgba(124,92,255,.7)}
+
+.btn.big{padding:15px 30px;font-size:15px;border-radius:14px}
+a.btn{display:inline-block;text-decoration:none}
+.ghost-btn.danger{color:var(--bad);border-color:rgba(251,113,133,.5)}
+
+/* intro */
+.bt-intro .lead{margin-bottom:18px}
+.bt-games{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bt-games li{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
+  background:var(--card-hi);border:1px solid var(--line);
+}
+.bt-num{
+  width:20px;height:20px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font-size:10.5px;font-weight:800;color:var(--muted);background:rgba(255,255,255,.06);
+}
+.bt-icon{font-size:17px;flex:none}
+.bt-name{font-size:13px;font-weight:650}
+.bt-cat{margin-left:auto;font-size:10.5px;color:var(--muted);text-align:right}
+.bt-tips{margin:0 0 20px;padding-left:18px}
+.bt-tips li{color:var(--muted);font-size:12.5px;line-height:1.75}
+
+/* one short instruction card per game */
+.bt-card{padding:34px 26px 26px}
+.bt-card h2{font-size:24px;margin:6px 0 10px}
+.bt-step{font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:800;margin-bottom:14px}
+.bt-card-icon{
+  width:74px;height:74px;margin:0 auto 6px;border-radius:22px;display:grid;place-items:center;font-size:36px;
+  background:linear-gradient(140deg,rgba(124,92,255,.35),rgba(34,211,238,.16));border:1px solid var(--line);
+}
+.bt-rule{font-size:16px;line-height:1.55;margin:18px auto 6px;max-width:440px}
+.bt-done{
+  display:inline-block;margin-bottom:16px;padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:700;
+  color:var(--good);background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.45);
+}
+
+.bt-note{
+  margin:16px auto 0;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.6;max-width:520px;
+  color:var(--muted);background:rgba(255,255,255,.035);border:1px solid var(--line);text-align:left;
+}
+.bt-note.ok{color:var(--good);border-color:rgba(52,211,153,.35)}
+
+/* brain profile */
+.bt-overall{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:2px 0 4px}
+.bt-overall-num{
+  font-size:84px;font-weight:800;line-height:1;letter-spacing:-2px;
+  background:linear-gradient(135deg,#c4b5ff,#7c5cff 55%,#22d3ee);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.bt-overall-of{font-size:20px;color:var(--muted);font-weight:700}
+.bt-profile-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center;margin:18px 0 6px}
+.bt-profile-grid .radar-viz{width:100%}
+.bt-profile-grid .radar-viz svg{margin:0 auto}
+.bt-rows{display:flex;flex-direction:column;gap:8px}
+.bt-row{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--card-hi);border:1px solid var(--line)}
+.bt-row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.bt-row-head{display:flex;align-items:baseline;justify-content:space-between;font-size:13px}
+.bt-row-score{font-size:17px;font-weight:800}
+.bt-row-game{font-size:10.5px;color:var(--muted)}
+.bt-row .meter{height:6px}
+.bt-profile .honest{text-align:left;margin:12px auto 18px;max-width:560px}
+
+@media (max-width:640px){
+  .bt-games{grid-template-columns:1fr}
+  .bt-profile-grid{grid-template-columns:1fr}
+  .bt-overall-num{font-size:68px}
+}
+
+/* same look as the profile page's honesty note (profile.css isn't loaded here) */
+.bt-profile .honest{
+  padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.6;
+  color:var(--text);background:rgba(255,255,255,.035);border:1px solid var(--line);
+}
+
+/* ---------- light mode ---------- */
+[data-theme="light"] .bt-seg{background:rgba(0,0,0,.08)}
+[data-theme="light"] .bt-seg.now{background:rgba(109,74,255,.15);box-shadow:0 0 0 1px rgba(109,74,255,.35)}
+[data-theme="light"] .bt-games li{background:var(--card-hi);border-color:var(--line)}
+[data-theme="light"] .bt-num{background:rgba(0,0,0,.06)}
+[data-theme="light"] .bt-card-icon{background:linear-gradient(140deg,rgba(109,74,255,.12),rgba(14,165,233,.08))}
+[data-theme="light"] .bt-note{background:rgba(0,0,0,.025);border-color:var(--line)}
+[data-theme="light"] .bt-note.ok{background:rgba(16,185,129,.1)}
+[data-theme="light"] .bt-row{background:var(--card-hi);border-color:var(--line)}
+[data-theme="light"] .bt-profile .honest{background:rgba(0,0,0,.025);border-color:var(--line)}

@@ -1,0 +1,104 @@
+.shell.wide{max-width:880px}
+.head-spacer{width:74px}
+.profile{display:flex;flex-direction:column;gap:18px}
+.profile .panel h2{font-size:18px;margin-bottom:4px}
+.profile .lead{margin-bottom:16px}
+
+/* hero: the one big number, then the shape */
+.hero{display:grid;grid-template-columns:minmax(200px,1fr) minmax(0,460px);gap:12px 22px;align-items:center}
+.hero-copy{min-width:0}
+.hero-label{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:650}
+.hero-figure{
+  font-size:88px;font-weight:800;line-height:1;margin:6px 0 10px;letter-spacing:-2px;
+  background:linear-gradient(135deg,#b9a6ff,#7c5cff 55%,#22d3ee);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-status{color:var(--text);font-size:13.5px;margin-top:12px;line-height:1.5}
+.hero-note{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.55;max-width:340px}
+/* the radar svg is width:100% (capped), so its column must give it a definite width */
+.hero-viz{display:flex;flex-direction:column;align-items:stretch;min-width:0;width:100%}
+.radar-viz{width:100%}
+.radar-viz svg{margin:0 auto}
+.center{text-align:center}
+
+/* ability rows */
+.ability-list{display:flex;flex-direction:column;gap:10px}
+.ability{
+  display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:16px;
+  background:var(--card-hi);border:1px solid var(--line);
+}
+.ability.soon{opacity:.55}
+.ab-icon{
+  width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:19px;
+  background:linear-gradient(140deg,rgba(124,92,255,.32),rgba(34,211,238,.14));border:1px solid var(--line);
+}
+.ab-main{flex:1;min-width:0}
+.ab-head{display:flex;align-items:center;gap:8px}
+.ab-name{font-size:14.5px}
+.ab-score{margin-left:auto;font-size:24px;font-weight:800;line-height:1}
+.ab-what{color:var(--muted);font-size:12px;margin:3px 0 10px;line-height:1.45}
+.ab-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.ab-meta{color:var(--muted);font-size:11.5px;min-width:0}
+.btn.small{padding:7px 12px;font-size:12px;border-radius:10px;flex:none}
+
+/* segmented control: the one filter, above the chart it scopes */
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.seg-btn{
+  font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);
+  color:var(--muted);background:rgba(255,255,255,.03);
+}
+.seg-btn:hover{color:var(--text)}
+.seg-btn[aria-pressed="true"]{color:var(--text);background:rgba(124,92,255,.22);border-color:rgba(124,92,255,.6)}
+.chart-slot{min-height:230px}
+
+/* table twin of the trend chart */
+.table-view{margin-top:12px}
+.table-view summary{cursor:pointer;color:var(--muted);font-size:12px}
+.table-view summary:hover{color:var(--text)}
+.table-view table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}
+.table-view th{text-align:left;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+.table-view td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums}
+
+.about ul{margin:10px 0 0;padding-left:18px}
+.about li{color:var(--muted);font-size:13px;line-height:1.7}
+.honest{
+  margin-top:14px;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.6;
+  color:var(--text);background:rgba(255,255,255,.035);border:1px solid var(--line);
+}
+
+@media (max-width:640px){
+  .hero{grid-template-columns:1fr}
+  .hero-figure{font-size:72px}
+  .ab-foot{flex-direction:column;align-items:flex-start}
+}
+
+/* Brain Test history */
+.bt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.bt-head .lead{max-width:520px}
+.bt-head .btn{flex:none;text-decoration:none}
+.bt-list{display:flex;flex-direction:column;gap:8px}
+.bt-item{
+  display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:14px;
+  padding:11px 14px;border-radius:12px;text-decoration:none;color:var(--text);
+  background:var(--card-hi);border:1px solid var(--line);transition:border-color .15s ease;
+}
+.bt-item:hover{border-color:rgba(124,92,255,.55)}
+.bt-item-day{font-size:13px}
+.bt-item-score{font-size:12px;color:var(--muted)}
+.bt-item-score b{font-size:17px;color:var(--text)}
+.bt-item-go{font-size:12px;color:var(--brand-2)}
+.pill.ranked{color:var(--good);border-color:rgba(52,211,153,.5)}
+@media (max-width:640px){
+  .bt-head{flex-direction:column}
+  .bt-item{grid-template-columns:1fr auto}
+}
+
+/* ---------- light mode ---------- */
+[data-theme="light"] .ability{background:var(--card-hi);border-color:var(--line)}
+[data-theme="light"] .ab-icon{background:linear-gradient(140deg,rgba(109,74,255,.12),rgba(14,165,233,.08))}
+[data-theme="light"] .seg-btn{background:rgba(0,0,0,.03);color:var(--muted)}
+[data-theme="light"] .seg-btn:hover{color:var(--text)}
+[data-theme="light"] .seg-btn[aria-pressed="true"]{color:var(--brand);background:rgba(109,74,255,.12);border-color:rgba(109,74,255,.4)}
+[data-theme="light"] .honest{background:rgba(0,0,0,.025);border-color:var(--line)}
+[data-theme="light"] .bt-item{background:var(--card-hi);border-color:var(--line)}
+[data-theme="light"] .bt-item:hover{border-color:rgba(109,74,255,.35)}
