@@ -251,6 +251,27 @@ export const ABILITIES = [
       return Math.round(clamp(s, 0, 100));
     },
     metric: (run) => `${run.hitRate}% of stars caught, ${run.falseAlarms} false alarms, d′ ${run.dprime}`
+  },
+  {
+    id: 'planning',
+    name: 'Planning',
+    game: 'path-finder',
+    gameName: 'Path Finder',
+    icon: '\u{1F9ED}',
+    what: 'Working out the best route before committing to it',
+    /* Only a perfect route moves the player up, so the level held in the second
+       half is the main estimate. Route efficiency (best cost / cost walked) nudges
+       it: always-best routes add half a level, 70% efficiency takes one off.
+       Weighted (mud) puzzles earn half a level. Anchors are our own judgement,
+       not published norms. Mostly unsolved rounds are capped. */
+    score(run) {
+      if (typeof run.levelEstimate !== 'number' || (run.total || 0) < 5) return null;
+      const x = run.levelEstimate + (run.weighted ? 0.5 : 0) + ((run.efficiency || 0) - 90) / 20;
+      let s = curve(x, [[1, 10], [1.5, 18], [2, 27], [2.5, 36], [3, 45], [3.5, 53], [4, 62], [4.5, 71], [5, 80], [5.5, 88], [6, 94], [6.5, 98]]);
+      if ((run.completionRate || 0) < 40) s = Math.min(s, 25);
+      return Math.round(s);
+    },
+    metric: (run) => `level ${run.levelEstimate} held, ${run.correct}/${run.total} best routes, ${run.efficiency}% efficient`
   }
 ];
 

@@ -685,3 +685,38 @@ body.game-page{min-height:100vh;display:flex;justify-content:center;padding:22px
   .as-card{width:156px;height:156px}
   .as-shape{width:104px;height:104px}
 }
+
+/* ---------- path finder ---------- */
+.pf-arena{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:14px}
+.pf-grid{
+  /* a dark stage in both themes */
+  --text:#eef1ff;--muted:#96a0c8;
+  display:grid;gap:4px;width:min(100%, calc(var(--pf-n, 7) * 44px));padding:8px;border-radius:16px;
+  background:linear-gradient(160deg,#20264c,#171b36);border:2px solid rgba(255,255,255,.08);
+}
+.pf-cell{
+  position:relative;aspect-ratio:1;border-radius:8px;padding:0;display:grid;place-items:center;
+  background:#2a315f;border:1px solid rgba(255,255,255,.07);color:#eef1ff;
+  font-size:clamp(11px, 2.4vw, 17px);font-weight:900;line-height:1;touch-action:manipulation;
+  transition:background .12s ease, box-shadow .12s ease;
+}
+button.pf-cell:hover{border-color:rgba(52,211,153,.6)}
+/* walls are hatched, mud carries its cost, the flag has a glyph - never colour alone */
+.pf-cell.wall{background:repeating-linear-gradient(45deg,#0b0d1a 0 5px,#151932 5px 10px);border-color:transparent;cursor:default}
+button.pf-cell.wall:hover{border-color:transparent}
+.pf-cell.mud{background:radial-gradient(circle at 30% 30%,#9a6a3c,#5b3a1f);color:#ffe9cf}
+.pf-cell.goal{background:linear-gradient(160deg,#fbbf24,#f59e0b);color:#2a1a05}
+.pf-cell.trail{box-shadow:inset 0 0 0 2px rgba(52,211,153,.6)}
+.pf-cell.trail::before{content:'';position:absolute;width:22%;height:22%;border-radius:50%;background:rgba(52,211,153,.85)}
+.pf-cell.here::after{
+  content:'';position:absolute;inset:16%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#a7f3d0,#10b981);box-shadow:0 0 14px rgba(52,211,153,.8);
+}
+.pf-cell.best{outline:3px dashed #fbbf24;outline-offset:-4px}
+.pf-cell.bump{animation:shake .28s ease}
+.pf-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:11.5px;color:var(--muted)}
+.pf-legend span{display:inline-flex;align-items:center;gap:6px}
+.pf-legend .pf-cell{width:18px;height:18px;border-radius:5px;display:inline-grid;font-size:10px;font-style:normal}
+.pf-mini{width:96px;gap:3px;padding:5px;border-radius:10px}
+.pf-mini .pf-cell{border-radius:4px;font-size:11px}
+.pf-demo{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}

@@ -368,16 +368,18 @@ test('visual tracking: objects stay in bounds, never overlap, keep moving, never
       for (let seed = 1; seed <= 12; seed++) {
         const s = VT.simulate(seed * 7919 + speed, { ...m, speed });
         let slow = 0;
+        let outside = 0;
+        let closest = Infinity;
         for (let i = 0; i < s.n; i++) {
           const xs = [];
           const ys = [];
           for (let f = 0; f <= s.steps; f++) {
             const p = VT.positionAt(s, f, i);
             xs.push(p.x); ys.push(p.y);
-            assert.ok(p.x >= r - 1e-3 && p.x <= w - r + 1e-3 && p.y >= r - 1e-3 && p.y <= h - r + 1e-3, `${name}: in bounds`);
+            if (p.x < r - 1e-3 || p.x > w - r + 1e-3 || p.y < r - 1e-3 || p.y > h - r + 1e-3) outside += 1;
             for (let j = i + 1; j < s.n; j++) {
               const q = VT.positionAt(s, f, j);
-              assert.ok(Math.hypot(p.x - q.x, p.y - q.y) >= 2 * r + 4, `${name}: objects ${i},${j} never touch`);
+              closest = Math.min(closest, Math.hypot(p.x - q.x, p.y - q.y));
             }
             if (f && Math.hypot(xs[f] - xs[f - 1], ys[f] - ys[f - 1]) / VT.DT < 0.5 * speed) slow += 1;
           }
@@ -388,6 +390,8 @@ test('visual tracking: objects stay in bounds, never overlap, keep moving, never
             assert.ok((g - f) * VT.DT < 4, `${name} speed ${speed}: object ${i} lingered ${((g - f) * VT.DT).toFixed(1)}s`);
           }
         }
+        assert.equal(outside, 0, `${name}: in bounds`);
+        assert.ok(closest >= 2 * r + 4, `${name}: objects never touch (closest ${closest.toFixed(1)})`);
         assert.ok(slow / (s.n * s.steps) < 0.005, `${name}: speed held constant (${slow} slow frames)`);
       }
     }
@@ -538,4 +542,130 @@ test('attention storm: ability score comes from sensitivity - speed cannot rescu
   assert.ok(run(2, 250) < run(3, 600), 'a very fast player with more errors scores below a slower careful one');
   assert.ok(run(0.6, 200) <= 20, 'near-guessing is capped however fast it is');
   assert.ok(Math.abs(run(3, 300) - run(3, 700)) <= 10, 'reaction time moves the score by at most 5 either way');
+});
+
+/* --------------------------------------------------------- path finder */
+
+import * as PF from '../js/games/logic/path-finder-logic.js';
+
+/* An independent check that shares no code with the generator: plain
+   Bellman-Ford relaxation over the grid, slow but obviously correct. */
+function bruteCheapest(rows, start, goal) {
+  const n = rows.length;
+  const cost = (r, c) => (rows[r][c] === '~' ? 2 : 1);
+  const dist = rows.map((row) => [...row].map(() => Infinity));
+  dist[start[0]][start[1]] = 0;
+  for (let changed = true; changed;) {
+    changed = false;
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      if (rows[r][c] === '#' || dist[r][c] === Infinity) continue;
+      for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const a = r + dr;
+        const b = c + dc;
+        if (a < 0 || b < 0 || a >= n || b >= n || rows[a][b] === '#') continue;
+        if (dist[r][c] + cost(a, b) < dist[a][b]) { dist[a][b] = dist[r][c] + cost(a, b); changed = true; }
+      }
+    }
+  }
+  return dist[goal[0]][goal[1]];
+}
+
+test('path finder: every generated puzzle is solvable, with valid endpoints and a correct best cost', () => {
+  for (const weighted of [false, true]) {
+    for (let level = 1; level <= PF.MAX_LEVEL; level++) {
+      const spec = PF.LEVELS[level - 1];
+      for (let seed = 1; seed <= 250; seed++) {
+        const p = PF.generatePuzzle(createRng(seed * 131 + level), level, weighted);
+        const n = p.size;
+        assert.equal(n, spec.size);
+        assert.equal(p.grid.length, n);
+        assert.ok(p.grid.every((row) => row.length === n && /^[.#~]+$/.test(row)));
+        assert.equal(p.start[1], 0, 'start on the left edge');
+        assert.equal(p.goal[1], n - 1, 'goal on the right edge');
+        assert.notEqual(p.grid[p.start[0]][p.start[1]], '#');
+        assert.notEqual(p.grid[p.goal[0]][p.goal[1]], '#');
+        const truth = bruteCheapest(p.grid, p.start, p.goal);
+        assert.ok(Number.isFinite(truth), `L${level} seed ${seed}: solvable`);
+        assert.equal(p.optimalCost, truth, 'the best cost the game scores against is the true best');
+        assert.equal(PF.walkCost(p.grid, p.bestPath), p.optimalCost, 'the outlined best route really costs that');
+        for (let i = 1; i < p.bestPath.length; i++) {
+          assert.ok(PF.isAdjacent(p.bestPath[i - 1], p.bestPath[i]) && p.grid[p.bestPath[i][0]][p.bestPath[i][1]] !== '#');
+        }
+        assert.ok(p.optimalSteps >= spec.minSteps, 'long enough to need planning');
+        if (!weighted) assert.ok(!p.grid.join('').includes('~'), 'no mud outside Hard');
+      }
+    }
+  }
+});
+
+test('path finder: harder levels offer a second route; Hard puzzles usually hide a trap', () => {
+  let traps = 0;
+  let total = 0;
+  for (let level = 3; level <= PF.MAX_LEVEL; level++) {
+    for (let seed = 1; seed <= 100; seed++) {
+      for (const weighted of [false, true]) {
+        const p = PF.generatePuzzle(createRng(seed * 7 + level), level, weighted);
+        const rows = p.grid.map((r) => r.split(''));
+        const best = PF.cheapestRoute(rows, p.start, p.goal);
+        assert.ok(PF.hasAlternative(rows, p.start, p.goal, best), `L${level}: a second route exists`);
+        if (weighted) { total += 1; if (p.trap) traps += 1; }
+      }
+    }
+  }
+  assert.ok(traps / total >= 0.9, `the fewest-steps route costs more than the best one in ${traps}/${total}`);
+});
+
+test('path finder: the carved fallback is solvable even on a crowded grid', () => {
+  for (let seed = 1; seed <= 500; seed++) {
+    const p = PF.carvedPuzzle(createRng(seed), 6, seed % 2 === 0, { size: 10, walls: 0.7 });
+    assert.ok(Number.isFinite(bruteCheapest(p.grid, p.start, p.goal)));
+    assert.equal(p.how, 'carved');
+  }
+});
+
+test('path finder: puzzles are reproducible and quick to generate', () => {
+  assert.deepEqual(PF.generatePuzzle(createRng(5), 5, true), PF.generatePuzzle(createRng(5), 5, true));
+  const t0 = performance.now();
+  for (let seed = 1; seed <= 100; seed++) PF.generatePuzzle(createRng(seed), PF.MAX_LEVEL, true);
+  const avg = (performance.now() - t0) / 100;
+  assert.ok(avg < 25, `hardest puzzles average ${avg.toFixed(1)} ms to generate`);
+});
+
+test('path finder: walked cost, staircase and points', () => {
+  const rows = ['.~.', '...', '...'];
+  assert.equal(PF.walkCost(rows, [[0, 0], [0, 1], [0, 2]]), 3, 'mud costs 2');
+  assert.equal(PF.walkCost(rows, [[0, 0], [1, 0], [1, 1], [1, 2], [0, 2]]), 4);
+  assert.equal(PF.nextLevel(3, { solved: true, optimal: true }), 4);
+  assert.equal(PF.nextLevel(3, { solved: true, optimal: false }), 3);
+  assert.equal(PF.nextLevel(3, { solved: false, optimal: false }), 2);
+  assert.equal(PF.nextLevel(PF.MAX_LEVEL, { solved: true, optimal: true }), PF.MAX_LEVEL);
+  assert.equal(PF.nextLevel(1, { solved: false, optimal: false }), 1);
+  const base = { level: 3, optimalCost: 10, timeMs: 20000, limitMs: 30000 };
+  assert.ok(PF.pointsFor({ ...base, solved: true, optimal: true, cost: 10 }) > PF.pointsFor({ ...base, solved: true, optimal: false, cost: 12 }));
+  assert.equal(PF.pointsFor({ ...base, solved: false, optimal: false, cost: 4 }), 0);
+});
+
+test('path finder: summary - completion, best routes, efficiency and level held', () => {
+  const p = (level, solved, cost, optimalCost, moves = cost) => ({ level, weighted: false, solved, optimal: solved && cost === optimalCost, cost, optimalCost, moves, optimalSteps: optimalCost, timeMs: 9000, planningMs: 2000 });
+  const m = PF.summarize([p(2, true, 8, 8), p(3, true, 10, 10), p(4, true, 14, 12), p(4, false, 5, 13), p(3, true, 11, 11), p(4, true, 13, 13)]);
+  assert.equal(m.completed, 5);
+  assert.equal(m.correct, 4);
+  assert.equal(m.total, 6);
+  assert.equal(m.accuracy, 67);
+  assert.equal(m.completionRate, 83);
+  assert.equal(m.efficiency, Math.round(((1 + 1 + 12 / 14 + 1 + 1) / 5) * 100));
+  assert.equal(m.excessMean, 0.4);
+  assert.equal(m.levelReached, 4);
+  assert.equal(m.levelEstimate, 3.7);                          // levels 4, 3, 4
+  assert.equal(m.hintsUsed, 0);
+});
+
+test('path finder: ability score - higher levels and better routes score higher', () => {
+  const a = abilityFor('path-finder');
+  assert.equal(a.score({ levelEstimate: 3, efficiency: 100, completionRate: 100, total: 3 }), null, 'too few puzzles');
+  const at = (levelEstimate, efficiency = 95, completionRate = 100, weighted = false) => a.score({ levelEstimate, efficiency, completionRate, weighted, total: 8 });
+  assert.ok(at(4) > at(3));
+  assert.ok(at(4, 100) > at(4, 75), 'efficient routes beat wasteful ones at the same level');
+  assert.ok(at(4, 95, 100, true) > at(4), 'weighted puzzles earn credit');
+  assert.ok(at(5, 95, 25) <= 25, 'mostly unsolved rounds are capped');
 });

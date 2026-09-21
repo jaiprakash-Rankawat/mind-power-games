@@ -582,6 +582,66 @@ export const GAMES = [
         }
       }
     ]
+  },
+  {
+    id: 'path-finder',
+    name: 'Path Finder',
+    icon: '🧭',
+    tagline: 'Plan the best route through the maze - every step counts.',
+    skills: 'Planning · Spatial problem solving',
+    module: 'path-finder.js',
+    locked: false,
+    modes: ['easy', 'medium', 'hard'],
+    category: 'Planning',
+    minutes: 2,
+    instruction: 'Walk from the start to the flag in as few steps as possible. Every step counts, so plan the route first.',
+    keys: 'Arrow keys or WASD - or click the next square',
+    tutorial: [
+      {
+        title: 'Find the way to the flag',
+        text: 'You start on the <b>green</b> square. Walls block the way. Find a route to the <b>flag</b>.',
+        buildDemo(box) {
+          const map = ['S.#.', '.##.', '...G'];
+          box.append(el('div', { class: 'pf-grid pf-mini', style: { gridTemplateColumns: 'repeat(4, 1fr)', width: '128px' } },
+            map.join('').split('').map((ch) => el('span', {
+              class: 'pf-cell' + (ch === '#' ? ' wall' : '') + (ch === 'S' ? ' here start' : '') + (ch === 'G' ? ' goal' : ''),
+              text: ch === 'G' ? '⚑' : ''
+            }))));
+        }
+      },
+      {
+        title: 'Every step counts',
+        text: 'Move one square at a time with the <b>arrow keys</b> or by clicking the next square. Steps back count too - so <b>plan first</b>, then walk.',
+        buildDemo(box) {
+          const map = ['S.#.', '.##.', '...G'];
+          const cells = map.join('').split('').map((ch) => el('span', {
+            class: 'pf-cell' + (ch === '#' ? ' wall' : '') + (ch === 'G' ? ' goal' : ''), text: ch === 'G' ? '⚑' : ''
+          }));
+          box.append(el('div', { class: 'pf-grid pf-mini', style: { gridTemplateColumns: 'repeat(4, 1fr)', width: '128px' } }, cells));
+          const route = [0, 4, 8, 9, 10, 11];
+          let i = 0;
+          const iv = setInterval(() => {
+            cells.forEach((c) => c.classList.remove('here', 'trail'));
+            route.slice(0, i + 1).forEach((k) => cells[k].classList.add('trail'));
+            cells[route[i]].classList.add('here');
+            i = (i + 1) % route.length;
+          }, 600);
+          return () => clearInterval(iv);
+        }
+      },
+      {
+        title: 'Better routes, bigger mazes',
+        text: 'A <b>perfect</b> route takes you up a level. On Hard, <b>mud</b> costs 2 steps - the shortest way is not always the cheapest.',
+        buildDemo(box) {
+          const map = ['S~~G', '....'];
+          box.append(el('div', { class: 'pf-grid pf-mini', style: { gridTemplateColumns: 'repeat(4, 1fr)', width: '128px' } },
+            map.join('').split('').map((ch) => el('span', {
+              class: 'pf-cell' + (ch === '~' ? ' mud' : '') + (ch === 'S' ? ' here start' : '') + (ch === 'G' ? ' goal' : ''),
+              text: ch === 'G' ? '⚑' : ch === '~' ? '2' : ''
+            }))));
+        }
+      }
+    ]
   }
 ];
 
