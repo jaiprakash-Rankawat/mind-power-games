@@ -27,10 +27,11 @@ build step, no npm install, no compiling.
    Select the folder itself - do **not** open it and pick `manifest.json`,
    and do **not** pick the `dist` folder.
 
-5. The card "Mind Power Games 1.0.0" appears. Click the puzzle-piece icon in the
-   Chrome toolbar and **pin** it so the icon stays visible.
+5. The "Mind Power Games" card appears, showing the version from `manifest.json`.
+   Click the puzzle-piece icon in the Chrome toolbar and **pin** it so the icon
+   stays visible.
 
-6. Click the icon. **Start Brain Test** runs all seven games in a row (about 12
+6. Click the icon. **Start Brain Test** runs all eleven games in a row (about 19
    minutes) and ends with your Brain Profile. The tiles below let you practise any
    single game. Everything opens in a full tab.
 

@@ -56,7 +56,7 @@ published results for similar tasks - not a comparison with other players).
 **Two ways to play:**
 
 - **Brain Test** (`test.html`, from "Start Brain Test" in the popup) - all eleven at
-  fixed settings, ending in a Brain Profile: an overall performance score, the seven
+  fixed settings, ending in a Brain Profile: an overall performance score, the eleven
   ability scores and their shape. Progress is saved after every game, so a closed
   tab resumes at the next game. Only the first test of the day, with no restarted
   games, is marked as ranking-eligible.
@@ -114,7 +114,7 @@ gives each tile its own note, so a path has a melody you can learn.
 
 ### Shared presentation
 
-All three games are built on the same shell (`js/core/arcade.js`), so they look and
+All eleven games are built on the same shell (`js/core/arcade.js`), so they look and
 feel like one product:
 
 - ambient glow behind the board that tints to whatever is in play
@@ -127,6 +127,16 @@ feel like one product:
 
 Color Clash adds glossy answer chips with colour-matched glow; Memory Grid and
 N-Back share the glossy tile grid.
+
+### Tutorials and theme
+
+The first time you open a game for practice, a short step-by-step tutorial with a
+live demo shows how it works; it can be skipped at any step. Games 4-11 can replay
+it from the **?** button on their setup screen. The Brain Test shows a one-line
+instruction card before each game instead.
+
+The sun / moon button in every page header switches between dark and light themes,
+and the choice is remembered.
 
 ### 2. Memory Grid (spatial span)
 Tiles flash one at a time; you replay the path in order. Each cleared level adds
@@ -231,19 +241,24 @@ generated puzzles against an independent solver). Arrow keys / WASD or click.
    matches the other games, and `createRng(seedFor(ctx))` for its randomness.
 3. Honour `ctx.official` (fixed settings, no setup screen, `completeRound` hands off).
 4. Add an entry to `GAMES` in `js/core/games.js` (with `official`, `category`,
-   `instruction`, `keys`, `minutes`) and a scoring curve to `ABILITIES` in
-   `js/core/profile.js`.
+   `instruction`, `keys`, `minutes`, and `tutorial` steps) and a scoring curve to
+   `ABILITIES` in `js/core/profile.js`. Setting `locked: true` keeps an unfinished
+   game out of the popup, the game page and the Brain Test.
 
 ## Local development
 
 `chrome.storage` is unavailable outside the extension, so scores fall back to
-`localStorage`. ES modules need HTTP (not `file://`):
+`localStorage`. ES modules need HTTP (not `file://`), so start the static server:
 
-```
-python -m http.server 5173
+```bash
+npm run dev
 ```
 
-Then open http://localhost:5173/game.html?game=stroop (or `memory-grid`, `n-back`)
+Then open http://localhost:5173/game.html?game=stroop - or any other game `id` from
+`js/core/games.js` (`memory-grid`, `n-back`, `reaction`, `task-switch`,
+`number-pattern`, `spatial-rotation`, `sequence-recall`, `visual-tracking`,
+`attention-storm`, `path-finder`). `test.html` runs the Brain Test and
+`profile.html` shows the profile.
 
 ## Files
 

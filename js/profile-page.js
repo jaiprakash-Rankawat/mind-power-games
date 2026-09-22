@@ -65,7 +65,7 @@ function hero(p) {
     copy,
     el('div', { class: 'hero-viz' },
       radar,
-      allPlayed ? null : el('p', { class: 'viz-caption center', text: 'Play all three games to draw your profile shape.' })
+      allPlayed ? null : el('p', { class: 'viz-caption center', text: 'Play every game to complete your profile shape.' })
     )
   );
 }
@@ -123,19 +123,7 @@ function abilities(p) {
   return el('section', { class: 'panel' },
     el('h2', { text: 'Abilities' }),
     el('p', { class: 'lead', text: 'Each ability is scored from your recent rounds of one game. Provisional means fewer than 3 rounds - keep playing for a stable number.' }),
-    el('div', { class: 'ability-list' },
-      p.abilities.map(abilityRow),
-      p.comingSoon.map((c) => el('div', { class: 'ability soon' },
-        el('span', { class: 'ab-icon', 'aria-hidden': 'true', text: '\u{1F512}' }),
-        el('div', { class: 'ab-main' },
-          el('div', { class: 'ab-head' },
-            el('b', { class: 'ab-name', text: c.name }),
-            el('span', { class: 'pill', text: 'Coming soon' })
-          ),
-          el('p', { class: 'ab-what', text: 'Arrives with ' + c.gameName + '.' })
-        )
-      ))
-    )
+    el('div', { class: 'ability-list' }, p.abilities.map(abilityRow))
   );
 }
 

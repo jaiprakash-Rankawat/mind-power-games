@@ -1,6 +1,6 @@
 /* The shared "game feel" shell: a board with an ambient glow that tints to the
    action, a particle layer, a damage flash and a callout chip. Every game builds
-   its own content on top of this, so the three of them stay visually consistent. */
+   its own content on top of this, so all eleven stay visually consistent. */
 
 import { el } from './util.js';
 import { createFx } from './fx.js';

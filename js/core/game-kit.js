@@ -1,6 +1,6 @@
 /* Shared screens for the newer games. They reproduce the original games' setup,
    countdown and results screens exactly (same classes, same behaviour), so all
-   seven games feel like one product. The three original games keep their own
+   eleven games feel like one product. The three original games keep their own
    copies of this code untouched. */
 
 import { el } from './util.js';

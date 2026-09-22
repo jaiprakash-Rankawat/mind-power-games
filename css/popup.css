@@ -62,15 +62,6 @@ body.popup{width:370px;padding:16px 14px 12px}
 .gc-tag{display:block;font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px}
 .game-card .meter{height:6px}
 
-.locked-row{
-  display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:12px;
-  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);
-  color:var(--muted);font-size:12px;
-}
-.lr-icon{font-size:14px;opacity:.6}
-.lr-name{font-weight:600;color:var(--text);opacity:.7}
-.lr-skill{flex:1;font-size:11px}
-
 .hub-foot{
   display:flex;justify-content:space-between;align-items:center;
   margin-top:14px;padding-top:10px;border-top:1px solid var(--line);
@@ -112,7 +103,6 @@ body.popup{width:370px;padding:16px 14px 12px}
 .game-card .gc-score{font-size:15px}
 /* wraps rather than truncating - 'provisional' is information, not decoration */
 .game-card .gc-ability{margin:0;line-height:1.35}
-.game-list .locked-row{grid-column:1 / -1}
 
 /* ---------- light mode ---------- */
 [data-theme="light"] .logo{

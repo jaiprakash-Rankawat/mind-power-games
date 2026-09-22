@@ -275,9 +275,6 @@ export const ABILITIES = [
   }
 ];
 
-/* Abilities announced but not yet playable (none - every game is built). */
-export const COMING_SOON = [];
-
 export const abilityFor = (gameId) => ABILITIES.find((a) => a.game === gameId) || null;
 
 /* ---------------------------------------------------------------- history */
@@ -435,7 +432,6 @@ export async function buildMindProfile() {
     total: ABILITIES.length,
     complete: scored.length === ABILITIES.length && scored.every((a) => !a.provisional),
     abilities,
-    trend,
-    comingSoon: COMING_SOON
+    trend
   };
 }

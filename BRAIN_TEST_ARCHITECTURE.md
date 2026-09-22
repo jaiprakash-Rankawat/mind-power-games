@@ -39,7 +39,7 @@ Registry order is test order (`js/core/games.js`).
 
 The whole test takes about 19 minutes (12 before protocol 2). Each game has a `minutes` estimate in the registry, and the total is computed from those.
 
-### Why these seven
+### Why the original seven
 
 The target list had seven categories, but the audit found that two of the three
 original games measure working memory: **Memory Grid** measures span (storing and
@@ -89,7 +89,7 @@ should be kept in mind when comparing abilities.
 
 ```
 popup.html / js/popup.js        Brain Test entry, Performance Score, practice tiles
-test.html  / js/test-runner.js  OFFICIAL: intro -> [card -> game] x7 -> Brain Profile
+test.html  / js/test-runner.js  OFFICIAL: intro -> [card -> game] x11 -> Brain Profile
 game.html  / js/game-shell.js   PRACTICE: one game, chosen difficulty   (unchanged)
 profile.html / js/profile-page.js   rolling profile, trend, Brain Test history
 
@@ -147,12 +147,12 @@ Every change is behind `if (official)` or adds new result fields:
 
 **Practice:** popup tile → `game.html?game=<id>` → setup (choose difficulty) → countdown → play → results screen (grade, stats, ability chip) → play again / change difficulty.
 
-**Official:** popup "Start Brain Test" → `test.html` → intro → for each of the 7 games:
-1. an instruction card ("GAME 3 / 7", one line of rules, the keys)
+**Official:** popup "Start Brain Test" → `test.html` → intro → for each of the 11 games:
+1. an instruction card ("GAME 3 / 11", one line of rules, the keys)
 2. the game at its official settings
 3. the result is saved into the session
 
-After game 7 comes the **Brain Profile**. A progress bar with 7 segments stays visible throughout. All runner actions are guarded against double activation, so a double-click can't start two sessions or mount a game twice.
+After game 11 comes the **Brain Profile**. A progress bar with one segment per game stays visible throughout. All runner actions are guarded against double activation, so a double-click can't start two sessions or mount a game twice.
 
 ---
 
@@ -168,7 +168,7 @@ raw trials -> native result (the game's own metrics + points)
 - **Normalised score (0–100):** each ability has a piecewise-linear curve with anchor points taken from published results for that kind of task. **50 is a reference midpoint, not a population average of our players.** 40–60 is shown as the reference range. Harder modes earn more credit for the same raw performance.
 - **Guardrails:** near-chance play is capped (e.g. accuracy under 65% on two-choice tasks, d′ under 1 in N-Back, more than 5 false starts in Reaction Speed). A game with too few valid trials returns *no score* rather than a misleading one.
 - **Rolling Performance Score** (popup and profile page): each ability's score is the median of the best 3 of the last 10 rounds, so one lucky round can't inflate it. It is "provisional" under 3 rounds. The Performance Score is the mean of the abilities played.
-- **Brain Test overall:** the mean of the seven normalised scores from that one session. A game with no valid score is **excluded**, not counted as zero, and the session is then marked unranked.
+- **Brain Test overall:** the mean of the session's normalised scores (eleven under protocol 2, seven under protocol 1). A game with no valid score is **excluded**, not counted as zero, and the session is then marked unranked.
 - **Scores are derived on read** from the stored raw results. `SCORING_VERSION` (in `result.js`) is saved with every official result, so a future curve change can be applied deliberately and knowingly.
 
 | Ability | Raw input | Midpoint (≈50) |
@@ -199,7 +199,7 @@ A session (`js/core/session.js`) is saved to `chrome.storage.local`:
 {
   id, kind: 'brain-test', protocolVersion: 2,   // 1 = the seven-game test
   seed,                         // every game's stimuli derive from this
-  order: [7 game ids], index,   // next game to play
+  order: [11 game ids], index,  // next game to play
   status: 'in_progress' | 'completed' | 'abandoned',
   createdAt, updatedAt, completedAt, localDay,
   attemptOfDay,                 // 1 = first Brain Test started today
@@ -241,7 +241,8 @@ All data lives in `chrome.storage.local` on the player's machine. The manifest r
 | `analytics:events` | local event log, capped at 2000 | `analytics.js` |
 | `analytics:firstOpenAt` | first time any extension page opened | `analytics.js` |
 | `profile.migrated` | one-time import of pre-profile bests done | `profile.js` |
-| `soundOn`, `soundVolume`, `stroop.palette` | preferences | audio, Color Clash |
+| `soundOn`, `soundVolume`, `stroop.palette`, `theme` | preferences | audio, Color Clash, theme toggle |
+| `tutorial:seen:<gameId>` | the first-play tutorial has been shown | `tutorial.js` |
 
 ### The GameResult envelope (official results)
 
@@ -279,7 +280,7 @@ The envelope **wraps** the native result rather than replacing it, so nothing a 
 
 ## 7. Randomisation and correctness
 
-- **Seeded:** `rng.js` provides a mulberry32 generator. Each official session stores a seed, and each game's seed is `hashSeed(sessionSeed, gameId)`. Practice rounds draw a fresh seed and **record it**, so any round of the four newer games can be regenerated exactly.
+- **Seeded:** `rng.js` provides a mulberry32 generator. Each official session stores a seed, and each game's seed is `hashSeed(sessionSeed, gameId)`. Practice rounds draw a fresh seed and **record it**, so any round of the eight newer games (4-11) can be regenerated exactly.
 - **Original three games:** they still use `Math.random` and are not seeded. Making them repeatable touches every random call in production code, so it was deferred until it's needed (e.g. a Daily Test where everyone gets identical stimuli).
 
 How each newer game guarantees one objectively correct answer (all enforced in `tests/games.test.mjs`):
@@ -312,7 +313,7 @@ Every game has Easy / Medium / Hard for practice, and **one fixed official setti
 
 ## 9. Anonymous user flow
 
-Install → click the icon → "Start Brain Test" → play all 7 → see the Brain Profile. No account, no network, nothing leaves the device.
+Install → click the icon → "Start Brain Test" → play all 11 → see the Brain Profile. No account, no network, nothing leaves the device.
 
 "Save your Brain Profile? Create an account" is **not built**. When it is added, it should be offered *after* results and should upload existing local sessions on consent.
 
@@ -323,7 +324,7 @@ Install → click the icon → "Start Brain Test" → play all 7 → see the Bra
 | | Practice | Brain Test |
 |--|--|--|
 | Entry | popup tiles, profile page | popup "Start Brain Test", `test.html` |
-| Games | one at a time | all 7, fixed order |
+| Games | one at a time | all 11, fixed order |
 | Settings | player's choice | fixed per game |
 | Attempts | unlimited | unlimited, but only the first of the day can be ranked |
 | Results | per-game results screen | Brain Profile at the end |
@@ -384,7 +385,7 @@ The anchors behind today's 0–100 scores are reference points from published re
 2. **Reliability.** Measure test-retest correlation per game from players who take the test on nearby days. Games with low reliability should get more trials.
 3. **Item calibration.** Number Pattern levels are rule families ordered by judgement. Item response theory on the logged responses (`raw.items`) would give empirical difficulties.
 4. **Device latency.** Browser and keyboard latency inflate reaction times by a roughly constant amount per device. A calibration trial, or per-device norms, would correct for it (`input` is logged per trial).
-5. **Construct checks.** Correlations between the seven abilities across players would confirm, or question, the mapping in section 1.
+5. **Construct checks.** Correlations between the eleven abilities across players would confirm, or question, the mapping in section 1.
 
 Until norms exist, the UI keeps to neutral language ("Your performance score was 72 out of 100"), and every results page carries the not-a-clinical-or-IQ-test note.
 

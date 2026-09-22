@@ -98,15 +98,6 @@ function gameCard(game, profile) {
   );
 }
 
-function lockedRow(game) {
-  return el('div', { class: 'locked-row' },
-    el('span', { class: 'lr-icon', 'aria-hidden': 'true', text: game.icon }),
-    el('span', { class: 'lr-name', text: game.name }),
-    el('span', { class: 'lr-skill', text: game.skills }),
-    el('span', { class: 'pill', text: 'soon' })
-  );
-}
-
 /* ----------------------------------------------------------------- render */
 
 async function render() {
@@ -116,8 +107,7 @@ async function render() {
   renderBrainCard(profile);
 
   document.getElementById('gameList').replaceChildren(
-    ...GAMES.filter((g) => !g.locked).map((g) => gameCard(g, profile)),
-    ...GAMES.filter((g) => g.locked).map(lockedRow)
+    ...GAMES.filter((g) => !g.locked).map((g) => gameCard(g, profile))
   );
 
   // Set stagger index for entrance animation
