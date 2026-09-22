@@ -10,7 +10,7 @@ import { createStage, createMeter } from '../core/arcade.js';
 import { createRng } from '../core/rng.js';
 import { abilityFor } from '../core/profile.js';
 import {
-  createScreens, officialOf, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
+  createScreens, officialOf, officialConfig, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
 } from '../core/game-kit.js';
 import {
   planTrials, outcomeOf, summarize, pointsFor, slotForKey, SIMPLE_FOREPERIOD, CHOICE_FOREPERIOD
@@ -20,7 +20,7 @@ const GAME_ID = 'reaction';
 const ACCENT = '#34d399';
 const MAX_FALSE_STARTS = 5;          // per trial, then it is scored as a miss and we move on
 
-const MODES = {
+export const MODES = {
   easy: {
     key: 'easy', name: 'Easy', simple: 12, choice: 0, choices: 2, simpleLimit: 1500, choiceLimit: 2000,
     meta: 'Simple reaction only - 12 lights.'
@@ -356,6 +356,6 @@ export function mount(root, ctx) {
     setScreen(node, cleanup);
   }
 
-  if (official) startCountdown(MODES[official.difficulty] || MODES.medium);
+  if (official) startCountdown(officialConfig(MODES, official));
   else showSetup();
 }

@@ -13,7 +13,7 @@ import { createRng } from '../core/rng.js';
 import { abilityFor } from '../core/profile.js';
 import { track } from '../core/analytics.js';
 import {
-  createScreens, officialOf, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
+  createScreens, officialOf, officialConfig, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
 } from '../core/game-kit.js';
 import {
   makeSequence, expectedAnswer, positionsRight, isCorrect, schedule, inputLimit, step, pointsFor, summarize, DIGITS
@@ -24,7 +24,7 @@ const ACCENT = '#37dcf2';
 const LEAD_MS = 550;                            // blank card before the first digit
 const REVIEW_MS = { right: 950, wrong: 2000 };
 
-const MODES = {
+export const MODES = {
   easy: {
     key: 'easy', name: 'Easy', reverse: false, startLength: 3, maxLength: 12, on: 900, off: 300,
     meta: 'Type the digits back in order. One digit every 1.2s.'
@@ -443,6 +443,6 @@ export function mount(root, ctx) {
     setScreen(node, cleanup);
   }
 
-  if (official) startCountdown(MODES[official.difficulty] || MODES.medium);
+  if (official) startCountdown(officialConfig(MODES, official));
   else showSetup();
 }

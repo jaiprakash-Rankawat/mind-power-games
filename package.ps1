@@ -10,7 +10,7 @@ $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 
 # Only what the extension actually needs at runtime.
-$ship = @('manifest.json', 'popup.html', 'game.html', 'profile.html', 'test.html', 'css', 'js', 'icons')
+$ship = @('manifest.json', 'popup.html', 'game.html', 'profile.html', 'test.html', 'daily.html', 'css', 'js', 'icons')
 
 Write-Host ''
 Write-Host 'Mind Power Games - packaging' -ForegroundColor Cyan

@@ -31,9 +31,10 @@ build step, no npm install, no compiling.
    Click the puzzle-piece icon in the Chrome toolbar and **pin** it so the icon
    stays visible.
 
-6. Click the icon. **Start Brain Test** runs all eleven games in a row (about 19
-   minutes) and ends with your Brain Profile. The tiles below let you practise any
-   single game. Everything opens in a full tab.
+6. Click the icon. The **Daily Brain Check** card runs five games in about five
+   minutes and builds your Brain Level - once a day. **Full Brain Test** runs all
+   eleven games in a row (about 19 minutes) and ends with your Brain Profile. The
+   tiles below let you practise any single game. Everything opens in a full tab.
 
 ---
 

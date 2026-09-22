@@ -92,6 +92,11 @@
   .bt-item{grid-template-columns:1fr auto}
 }
 
+/* Daily Brain Check */
+.dc-summary{margin:16px 0 4px}
+.dc-stats{grid-template-columns:repeat(3,1fr);margin:14px 0 6px}
+.dc-summary + .chart-slot{margin-bottom:14px}
+
 /* ---------- light mode ---------- */
 [data-theme="light"] .ability{background:var(--card-hi);border-color:var(--line)}
 [data-theme="light"] .ab-icon{background:linear-gradient(140deg,rgba(109,74,255,.12),rgba(14,165,233,.08))}

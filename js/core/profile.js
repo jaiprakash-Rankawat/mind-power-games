@@ -323,23 +323,24 @@ async function migrateOnce() {
 /**
  * Called by each game when a round ends. Stores the raw result and reports how
  * the ability score moved, for the results screen.
- * meta.source: 'practice' (default) or 'official'; official rounds also carry
- * their sessionId. Both count toward this rolling profile; only official
- * sessions can ever count toward rankings.
+ * meta.source: 'practice' (default), 'official' (Brain Test) or 'daily' (Daily
+ * Brain Check); test rounds also carry their sessionId. All of them count toward
+ * this rolling profile; only official sessions can ever count toward rankings.
  */
 export async function logRun(gameId, result, meta = {}) {
   await migrateOnce();
   const ability = abilityFor(gameId);
   const history = await getHistory(gameId);
   const before = ability ? abilityScore(ability, history) : null;
-  const source = meta.source === 'official' ? 'official' : 'practice';
+  const source = meta.source === 'official' || meta.source === 'daily' ? meta.source : 'practice';
 
   history.push({ ...result, ts: Date.now(), source, ...(meta.sessionId ? { sessionId: meta.sessionId } : {}) });
   while (history.length > HISTORY_CAP) history.shift();
   await set(histKey(gameId), history);
 
-  track(source === 'official' ? 'game_completed' : 'practice_completed', {
+  track(source === 'practice' ? 'practice_completed' : 'game_completed', {
     game_id: gameId,
+    source,
     session_id: meta.sessionId || null,
     difficulty: result.mode || null,
     score: typeof result.score === 'number' ? result.score : null,

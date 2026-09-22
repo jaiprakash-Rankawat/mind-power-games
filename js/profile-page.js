@@ -5,6 +5,8 @@
 import { buildMindProfile, TYPICAL } from './core/profile.js';
 import { radarChart, lineChart, meter } from './core/charts.js';
 import { getCurrentSession, listSessions, testMinutes, officialOrder } from './core/session.js';
+import { dailyState, dailyOrder, dailyMinutes } from './core/daily.js';
+import { levelBar } from './core/level-ui.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { el } from './core/util.js';
 import { wireThemeToggle } from './core/theme-toggle.js';
@@ -68,6 +70,45 @@ function hero(p) {
       allPlayed ? null : el('p', { class: 'viz-caption center', text: 'Play every game to complete your profile shape.' })
     )
   );
+}
+
+/* ------------------------------------------------------------ daily check */
+
+function dailyCheck(st) {
+  const cta =
+    st.current ? `Resume - game ${st.current.index + 1} of ${st.current.order.length}` :
+    st.doneToday ? "See today's results" :
+    st.history.length ? "Start today's check" : 'Take your first check';
+  const scored = st.history.filter((c) => typeof c.score === 'number');
+  const chartSlot = el('div', { class: 'chart-slot' });
+  const stat = (value, label) => el('div', { class: 'box' }, el('b', { text: value === null ? '—' : String(value) }), el('span', { text: label }));
+
+  const section = el('section', { class: 'panel' },
+    el('div', { class: 'bt-head' },
+      el('div', {},
+        el('h2', { text: 'Daily Brain Check' }),
+        el('p', { class: 'lead', text: `${dailyOrder().length} quick games, about ${dailyMinutes()} minutes. Your first check each day earns XP toward your Brain Level, with extra for every best you beat. The score is the average of its five ability scores.` })),
+      el('a', { class: 'btn primary', href: 'daily.html' }, cta)),
+    el('div', { class: 'dc-summary' },
+      levelBar(st.level),
+      el('div', { class: 'grid4 dc-stats' },
+        stat(st.bestScore, 'Best score'),
+        stat(st.lastScore, 'Last score'),
+        stat(st.history.length, 'Checks'))),
+    scored.length ? chartSlot : el('p', { class: 'viz-caption', text: 'No checks yet. Your first one sets your baseline.' }),
+    scored.length
+      ? el('div', { class: 'bt-list' }, st.history.slice(-5).reverse().map((c) =>
+          el('a', { class: 'bt-item', href: 'daily.html?check=' + encodeURIComponent(c.id) },
+            el('span', { class: 'bt-item-day', text: fmtDate(Date.parse(c.completedAt)) }),
+            el('span', { class: 'bt-item-score' }, el('b', { text: c.score === null ? '—' : String(c.score) }), ' / 100'),
+            el('span', { class: 'pill', text: `+${c.xp} XP` }),
+            el('span', { class: 'bt-item-go', text: 'View →' }))))
+      : null
+  );
+  const draw = () => {
+    if (scored.length) lineChart({ points: scored.map((c) => ({ ts: Date.parse(c.completedAt), value: c.score })), into: chartSlot, name: 'Daily score', typical: TYPICAL });
+  };
+  return { section, draw };
 }
 
 /* ------------------------------------------------------------- brain test */
@@ -188,6 +229,7 @@ function about() {
       el('li', { text: 'Each ability is scored 0 to 100 from your last 10 rounds of its game: the middle of your best three. One lucky round will not inflate it, and one bad day will not sink it.' }),
       el('li', { text: '50 is a reference midpoint for each task, set from published results for similar tasks - not from other players. Harder modes earn more credit for the same performance.' }),
       el('li', { text: 'Your Performance Score is the average of the abilities you have played.' }),
+      el('li', { text: 'Brain Level counts your Daily Brain Checks and the bests you beat in them. It only goes up: it measures practice and progress, not intelligence.' }),
       el('li', { text: 'Your raw results are kept, and scores are recalculated from them - nothing is lost if the scoring is improved later.' })
     ),
     el('p', { class: 'honest', text: 'These scores use rough reference points from published research on these tasks. They are good for tracking yourself over time, but they are not a clinical or IQ assessment.' })
@@ -199,9 +241,11 @@ function about() {
 async function render() {
   const p = await buildMindProfile();
   const progress = trend(p);
+  const daily = dailyCheck(await dailyState());
   const tests = await brainTests();
-  root.replaceChildren(hero(p), tests, abilities(p), progress.section, about());
+  root.replaceChildren(hero(p), daily.section, tests, abilities(p), progress.section, about());
   progress.draw();
+  daily.draw();
 }
 
 render();

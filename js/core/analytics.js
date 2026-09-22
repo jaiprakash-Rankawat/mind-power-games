@@ -18,6 +18,9 @@ export const EVENTS = [
   'game_completed',
   'brain_test_completed',
   'brain_test_abandoned',
+  'daily_check_started',
+  'daily_check_completed',
+  'daily_check_abandoned', // left unfinished until the day ended
   'practice_started',
   'practice_completed',
   'game_abandoned',        // practice round quit with Esc (the four newest games)

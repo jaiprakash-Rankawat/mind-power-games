@@ -26,6 +26,10 @@ export function createScreens(root) {
 
 export const officialOf = (ctx) => (ctx && ctx.official ? ctx.official : null);
 
+/** Test settings: a mode, plus any per-test adjustments (e.g. the Daily Brain Check's shorter rounds). */
+export const officialConfig = (modes, official) =>
+  ({ ...(modes[official.difficulty] || modes.medium), ...(official.overrides || {}) });
+
 /** Official runs use the session-derived seed; practice runs get a fresh one. */
 export const seedFor = (ctx) => (officialOf(ctx) && typeof ctx.official.seed === 'number' ? ctx.official.seed : randomSeed());
 
@@ -93,7 +97,8 @@ export async function completeRound({ ctx, gameId, cfg, result, showResults }) {
   const prevBest = await getBest(gameId, cfg.key);
   const isRecord = await saveBest(gameId, cfg.key, result);
   await recordRound(result.score);
-  const change = await logRun(gameId, result, official ? { source: 'official', sessionId: official.sessionId } : {});
+  const change = await logRun(gameId, result,
+    official ? { source: official.source || 'official', sessionId: official.sessionId } : {});
   if (official) { official.onComplete(result); return; }
   showResults({ isRecord, prevBest, change });
 }

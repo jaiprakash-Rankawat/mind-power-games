@@ -10,6 +10,7 @@ import { sfx } from '../core/audio.js';
 import { countUp } from '../core/fx.js';
 import { createStage, createMeter, gradeChip, resultFx, abilityChip } from '../core/arcade.js';
 import { logRun } from '../core/profile.js';
+import { createRng } from '../core/rng.js';
 import { median } from '../core/stats.js';
 
 /* Two palettes. "safe" is built on the Okabe-Ito colour-blind-safe set, so the
@@ -33,7 +34,7 @@ const PALETTES = {
   ]
 };
 
-const MODES = {
+export const MODES = {
   easy: {
     key: 'easy', name: 'Easy', colors: 4, seconds: 60,
     timePenalty: 0, shuffleOptions: false, ruleSwitch: false,
@@ -193,6 +194,14 @@ export function mount(root, ctx) {
     const pool = palette().slice(0, cfg.colors);
     const best = await getBest('stroop', cfg.key);
 
+    // A test passes a seed, so its stimuli can be regenerated - and a day's Daily
+    // Brain Check is the same for everyone. Practice keeps Math.random, as before.
+    const seed = official && typeof official.seed === 'number' ? official.seed : null;
+    const rng = seed === null ? null : createRng(seed);
+    const rand = rng ? rng.next : Math.random;
+    const choose = rng ? rng.pick : pick;
+    const reorder = rng ? rng.shuffle : shuffle;
+
     const stats = { score: 0, correct: 0, wrong: 0, streak: 0, bestStreak: 0, rtTotal: 0, fastest: Infinity };
 
     // trial-by-trial raw record - kept for later analysis, never summarised away
@@ -259,19 +268,19 @@ export function mount(root, ctx) {
     }
 
     function nextTrial() {
-      const flip = cfg.ruleSwitch && Math.random() < 0.3;
+      const flip = cfg.ruleSwitch && rand() < 0.3;
       const rule = cfg.ruleSwitch ? (flip ? (lastRule === 'ink' ? 'word' : 'ink') : lastRule) : 'ink';
       const ruleFlipped = rule !== lastRule;
       lastRule = rule;
 
-      const word = pick(pool);
+      const word = choose(pool);
       let ink = word;
-      if (Math.random() > CONGRUENT_CHANCE) {
-        while (ink.name === word.name) ink = pick(pool);
+      if (rand() > CONGRUENT_CHANCE) {
+        while (ink.name === word.name) ink = choose(pool);
       }
       current = { word, ink, rule, answer: rule === 'ink' ? ink : word };
 
-      if (cfg.shuffleOptions) { options = shuffle(pool); renderChips(); }
+      if (cfg.shuffleOptions) { options = reorder(pool); renderChips(); }
 
       const base = rule === 'ink'
         ? 'Tap the color the word is <b>printed in</b>'
@@ -484,13 +493,13 @@ export function mount(root, ctx) {
         fastest: stats.fastest === Infinity ? 0 : Math.round(stats.fastest),
         ...interference(trials),
         startedAt,
-        raw: { trials, pauses, palette: paletteKey }
+        raw: { trials, pauses, palette: paletteKey, ...(seed === null ? {} : { seed }) }
       };
 
       const isRecord = await saveBest('stroop', cfg.key, result);
       await recordRound(result.score);
       const change = await logRun('stroop', result,
-        official ? { source: 'official', sessionId: official.sessionId } : {});
+        official ? { source: official.source || 'official', sessionId: official.sessionId } : {});
       if (official) { official.onComplete(result); return; }
       showResults(cfg, result, isRecord, best, change);
     }
@@ -568,7 +577,8 @@ export function mount(root, ctx) {
      colour-blind palette choice still applies. */
   async function startOfficial() {
     paletteKey = await get('stroop.palette', 'standard');
-    startCountdown(MODES[official.difficulty] || MODES.medium);
+    // the Daily Brain Check shortens the round through overrides
+    startCountdown({ ...(MODES[official.difficulty] || MODES.medium), ...(official.overrides || {}) });
   }
 
   if (official) startOfficial();

@@ -1,0 +1,56 @@
+/* Daily Brain Check. Built on the Brain Test runner's styles (test.css); only
+   what is new here - the level, the XP breakdown and beat-your-best - lives here. */
+
+.dc-level{margin:4px 0 18px}
+.dc-done .dc-level{max-width:420px;margin:18px auto}
+.dc-done .lead{margin-bottom:18px}
+
+/* the target on each instruction card */
+.dc-target{
+  display:inline-block;margin:14px auto 4px;padding:7px 14px;border-radius:999px;
+  font-size:12.5px;font-weight:650;color:var(--muted);
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+}
+.dc-target.beat{color:#fbbf24;background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.45)}
+
+/* XP and level on the results screen */
+.dc-level-box{
+  margin:18px auto 16px;max-width:520px;padding:14px 16px;border-radius:16px;text-align:left;
+  background:var(--card-hi);border:1px solid var(--line);
+}
+.dc-xp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.dc-xp-head b{font-size:18px;color:var(--brand-2);font-variant-numeric:tabular-nums}
+.dc-levelup{
+  font-size:12px;font-weight:800;letter-spacing:.4px;color:#fbbf24;opacity:0;transform:scale(.9);
+  transition:opacity .25s ease,transform .35s cubic-bezier(.34,1.6,.64,1);
+}
+.dc-levelup.on{opacity:1;transform:scale(1)}
+.dc-xp{list-style:none;margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.dc-xp li{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.dc-xp li b{color:var(--text);font-variant-numeric:tabular-nums}
+
+/* per-game rows */
+.dc-rows{max-width:560px;margin:0 auto}
+.dc-row-right{display:flex;align-items:baseline;gap:8px}
+.dc-best{border-color:rgba(251,191,36,.5)}
+.dc-pill-best{color:#fbbf24;border-color:rgba(251,191,36,.5)}
+
+/* the next step */
+.dc-next{
+  margin:18px auto 0;max-width:560px;padding:14px 16px;border-radius:16px;text-align:center;
+  background:rgba(124,92,255,.08);border:1px solid rgba(124,92,255,.35);
+}
+.dc-next-kicker{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800;color:var(--brand-2);margin-bottom:6px}
+.dc-next-text{font-size:13.5px;line-height:1.55;margin-bottom:12px}
+.dc-next .foot-hint{margin-top:10px}
+
+.dc-results .honest{margin-top:18px}
+
+/* ---------- light mode ---------- */
+[data-theme="light"] .dc-target{background:rgba(0,0,0,.03)}
+[data-theme="light"] .dc-target.beat{color:#b45309;background:rgba(245,158,11,.1);border-color:rgba(217,119,6,.4)}
+[data-theme="light"] .dc-levelup,
+[data-theme="light"] .dc-pill-best{color:#b45309}
+[data-theme="light"] .dc-best{border-color:rgba(217,119,6,.45)}
+[data-theme="light"] .dc-next{background:rgba(109,74,255,.06);border-color:rgba(109,74,255,.25)}
+[data-theme="light"] .dc-xp-head b{color:#0e7490}

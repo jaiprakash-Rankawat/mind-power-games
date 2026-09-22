@@ -14,7 +14,7 @@ import { createRng, hashSeed } from '../core/rng.js';
 import { abilityFor } from '../core/profile.js';
 import { track } from '../core/analytics.js';
 import {
-  createScreens, officialOf, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
+  createScreens, officialOf, officialConfig, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
 } from '../core/game-kit.js';
 import {
   simulate, positionAt, labelOrder, nextLevel, speedFor, pointsFor, summarize, ARENA, DT, LEVELS
@@ -26,7 +26,7 @@ const CUE_MS = 1500;                            // target marked, everything sti
 const ANSWER_MS = 10000;                        // generous: only stops a round stalling
 const REVIEW_MS = { right: 900, wrong: 1600 };
 
-const MODES = {
+export const MODES = {
   easy: {
     key: 'easy', name: 'Easy', n: 3, duration: 4000, wander: 0.7, turns: 0, startLevel: 1, trials: 10,
     meta: '3 objects, gentle motion, 4 seconds. 10 rounds.'
@@ -392,6 +392,6 @@ export function mount(root, ctx) {
     setScreen(node, cleanup);
   }
 
-  if (official) startCountdown(MODES[official.difficulty] || MODES.medium);
+  if (official) startCountdown(officialConfig(MODES, official));
   else showSetup();
 }

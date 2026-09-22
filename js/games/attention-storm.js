@@ -13,7 +13,7 @@ import { createRng } from '../core/rng.js';
 import { abilityFor } from '../core/profile.js';
 import { track } from '../core/analytics.js';
 import {
-  createScreens, officialOf, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
+  createScreens, officialOf, officialConfig, seedFor, setupPanel, countdown, completeRound, resultsPanel, pauseOverlay, gradeFromScore
 } from '../core/game-kit.js';
 import {
   makeBlock, windowFor, outcomeOf, pointsFor, nextLevel, rates, summarize, timingFor, shapeMarkup,
@@ -25,7 +25,7 @@ const ACCENT = '#fbbf24';
 const LEAD_MS = 700;                            // blank card before a block starts
 const BREAK_MS = 1700;                          // between blocks
 
-const MODES = {
+export const MODES = {
   easy: {
     key: 'easy', name: 'Easy', startLevel: 1, blocks: 3, size: 32, targets: 8, lures: 4,
     lureShapes: ['star6', 'star4'], otherShapes: ['circle', 'triangle', 'square', 'diamond'],
@@ -373,6 +373,6 @@ export function mount(root, ctx) {
     setScreen(node, cleanup);
   }
 
-  if (official) startCountdown(MODES[official.difficulty] || MODES.medium);
+  if (official) startCountdown(officialConfig(MODES, official));
   else showSetup();
 }

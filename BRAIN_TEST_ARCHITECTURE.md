@@ -1,8 +1,9 @@
 # Brain Test Architecture
 
 Mind Power Games is a Manifest V3 Chrome extension with eleven short cognitive
-games. They can be played one at a time (**Practice**) or as a fixed, eleven-game
-**Brain Test** that produces a Brain Profile.
+games. They can be played one at a time (**Practice**), as a five-game, five-minute
+**Daily Brain Check** that builds a Brain Level (section 15), or as a fixed,
+eleven-game **Brain Test** that produces a Brain Profile.
 
 The code is plain JavaScript (ES modules). There is no bundler, no framework, no
 dependencies, no network code, and no account. Chrome loads the source files
@@ -11,7 +12,7 @@ directly.
 ## Product principles
 
 1. These are **cognitive-performance games**, not a medical, clinical or IQ assessment. The UI says so wherever scores appear.
-2. Scores are called **Performance Scores**, never "IQ", "intelligence" or "brain power". There are no population comparisons ("better than X% of people").
+2. Scores are called **Performance Scores**, never "IQ", "intelligence" or "brain power". There are no population comparisons ("better than X% of people"). **Brain Level** is a progression level earned with XP: it only goes up and is always described as practice and progress, never as a measure of intelligence.
 3. **Accuracy and consistency come before flashy scoring.** Every question has exactly one objectively correct answer, and the tests prove it.
 4. **Raw data is never thrown away.** Every trial is stored; scores are derived from it.
 5. **No login to play.** The whole test works anonymously and offline.
@@ -88,7 +89,8 @@ should be kept in mind when comparing abilities.
 ## 2. Architecture
 
 ```
-popup.html / js/popup.js        Brain Test entry, Performance Score, practice tiles
+popup.html / js/popup.js        Daily Brain Check, Performance Score, Brain Test, practice tiles
+daily.html / js/daily-runner.js DAILY: home -> [card -> game] x5 -> results, XP, Brain Level
 test.html  / js/test-runner.js  OFFICIAL: intro -> [card -> game] x11 -> Brain Profile
 game.html  / js/game-shell.js   PRACTICE: one game, chosen difficulty   (unchanged)
 profile.html / js/profile-page.js   rolling profile, trend, Brain Test history
@@ -96,6 +98,8 @@ profile.html / js/profile-page.js   rolling profile, trend, Brain Test history
 js/core/
   games.js        registry: order, modes, official settings, instructions, minutes
   session.js      Brain Test sessions: state machine, persistence, eligibility
+  daily.js        Daily Brain Check: settings, day seed, XP and Brain Level, persistence
+  level-ui.js     Brain Level badge and XP bar
   result.js       standard GameResult envelope (wraps a game's native result)
   profile.js      scoring curves, run history, rolling Performance Score, trend
   rng.js          seeded PRNG (mulberry32) + seed hashing
@@ -110,13 +114,16 @@ js/games/logic/  pure, DOM-free logic for the eight newer games (unit-tested)
 
 ### The game contract
 
-Each game exports exactly one function:
+Each game exports one function (the five in the Daily Brain Check also export their
+`MODES`, so the tests can check the daily settings against the real ones):
 
 ```js
 mount(root, ctx)
 // ctx.game      registry entry
-// ctx.official  absent in practice; in the Brain Test:
-//               { difficulty, blocks?, seed, sessionId, onComplete(result) }
+// ctx.official  absent in practice; in the Brain Test and the Daily Brain Check:
+//               { difficulty, blocks?, overrides?, source?, seed, sessionId, onComplete(result) }
+//               overrides: settings merged over the mode (the daily check's shorter rounds)
+//               source:    'official' (default) or 'daily', recorded with the round
 ```
 
 **Practice** passes `{ game }` and nothing else, so every game behaves exactly as it did before the Brain Test existed.
@@ -135,7 +142,7 @@ Every change is behind `if (official)` or adds new result fields:
 | Game | Change |
 |------|--------|
 | All three | `ctx.official` branch at mount; official hand-off in `finish()`; Esc ignored when official; `startedAt` and a `raw` trial log added to the result |
-| Color Clash | keeps the colour-blind palette choice in official mode; new fields `rtCongruent`, `rtIncongruent`, `interferenceMs` |
+| Color Clash | keeps the colour-blind palette choice in official mode; new fields `rtCongruent`, `rtIncongruent`, `interferenceMs`. Since v1.3.0: seeded from `ctx.official.seed` when a test passes one (practice keeps `Math.random`, and records no seed); `overrides` can shorten the round; `source` is passed to the history |
 | Memory Grid | new fields `correctSequences`, `errors`; raw log of every attempt, with the timing of each tap |
 | N-Back | official settings can set the block count; "Stop and score" is hidden in official mode; raw log of every trial across blocks. `trials` stays a *count*; the list lives in `raw.trials`. |
 
@@ -232,12 +239,15 @@ All data lives in `chrome.storage.local` on the player's machine. The manifest r
 
 | Key | Contents | Written by |
 |-----|----------|------------|
-| `history:<gameId>` | every round (practice and official), raw result + `ts` + `source` (+ `sessionId`), up to 1000 per game | `profile.logRun` |
+| `history:<gameId>` | every round (practice, official and daily), raw result + `ts` + `source` (+ `sessionId`), up to 1000 per game | `profile.logRun` |
 | `best:<gameId>:<mode>` | best-points round per mode | `storage.saveBest` |
 | `profile` | rounds played, best points, day streak (local days) | `storage.recordRound` |
 | `session:<id>` | a full Brain Test session, including GameResults with raw data | `session.js` |
 | `session:current` | id of the in-progress session, or null | `session.js` |
 | `sessions:list` | a summary row per session (for history and daily attempt counting) | `session.js` |
+| `daily:check:<id>` | a full Daily Brain Check, including GameResults with raw data | `daily.js` |
+| `daily:current` | id of the daily check in progress, or null | `daily.js` |
+| `daily:list` | a row per daily check: day, counted, status, score, per-game scores, XP awarded (Brain Level is the sum of counted XP) | `daily.js` |
 | `analytics:events` | local event log, capped at 2000 | `analytics.js` |
 | `analytics:firstOpenAt` | first time any extension page opened | `analytics.js` |
 | `profile.migrated` | one-time import of pre-profile bests done | `profile.js` |
@@ -281,7 +291,7 @@ The envelope **wraps** the native result rather than replacing it, so nothing a 
 ## 7. Randomisation and correctness
 
 - **Seeded:** `rng.js` provides a mulberry32 generator. Each official session stores a seed, and each game's seed is `hashSeed(sessionSeed, gameId)`. Practice rounds draw a fresh seed and **record it**, so any round of the eight newer games (4-11) can be regenerated exactly.
-- **Original three games:** they still use `Math.random` and are not seeded. Making them repeatable touches every random call in production code, so it was deferred until it's needed (e.g. a Daily Test where everyone gets identical stimuli).
+- **Original three games:** Memory Grid and N-Back still use `Math.random` and are not seeded. Color Clash, which the Daily Brain Check needed, takes its stimuli from `ctx.official.seed` whenever a test passes one (both the Daily Brain Check and the Brain Test); practice rounds keep `Math.random`.
 
 How each newer game guarantees one objectively correct answer (all enforced in `tests/games.test.mjs`):
 
@@ -352,7 +362,7 @@ The data is shaped for **Daily** (`localDay`), **Weekly** (group by week of `loc
 > what make those checks possible: the server can regenerate the stimuli from the
 > seed and re-score the raw responses.
 
-For a fair Daily Test where everyone sees the same stimuli, derive the session seed from the date, and seed the three original games (see section 7).
+The Daily Brain Check already derives its seed from the local date (section 15), so its five games give everyone the same stimuli on the same day - the basis for a fair daily ranking. A Brain Test variant would also need Memory Grid and N-Back seeded (section 7).
 
 ---
 
@@ -364,7 +374,8 @@ For a fair Daily Test where everyone sees the same stimuli, derive the session s
 |-------|------|
 | `extension_installed` | first time any extension page opens (there is no background worker to catch the real install) |
 | `brain_test_started` / `_completed` / `_abandoned` | session lifecycle |
-| `game_started` / `game_completed` | official games |
+| `daily_check_started` / `_completed` / `_abandoned` | Daily Brain Check lifecycle (`counted`, `score`, `xp`; abandoned = left unfinished until the day ended) |
+| `game_started` / `game_completed` | games in the Brain Test and the Daily Brain Check (`source`: `official` or `daily`) |
 | `practice_started` / `practice_completed` | practice games (started = opened from the popup or profile) |
 | `result_shared` | "Copy result" on the Brain Profile |
 | `game_abandoned` | a practice round of one of the four newest games is quit with Esc (`trials_completed`, `duration_ms`) |
@@ -395,7 +406,7 @@ Until norms exist, the UI keeps to neutral language ("Your performance score was
 
 | Command | What it checks |
 |---------|----------------|
-| `npm test` | 64 unit tests (Node built-in runner): scoring baseline for the original games, rng / stats / result envelope / session state machine and eligibility, the migration regression, correctness of every newer game's generator, and the eleven-game protocol (`tests/brain-test.test.mjs`) |
+| `npm test` | 78 unit tests (Node built-in runner): scoring baseline for the original games, rng / stats / result envelope / session state machine and eligibility, the migration regression, correctness of every newer game's generator, the eleven-game protocol (`tests/brain-test.test.mjs`), and the Daily Brain Check (`tests/daily.test.mjs`: settings, shortened rounds still scored, day seed, XP and levels) |
 | `npm run validate` | manifest, icons, CSP (no inline scripts or `eval`), every asset path and import, registry → module |
 | `npm run build` | validate, then write `dist/mind-power-games-v<version>.zip` |
 | `tests/browser/harness.html` | dev-only page (not shipped) for mounting any game with an official context from the console |
@@ -414,3 +425,36 @@ Until norms exist, the UI keeps to neutral language ("Your performance score was
 - the Brain Test resuming at game 8 of 11 and playing the four new games in official mode to the Brain Profile (11 rows, overall = mean), with an interrupted game restarted and the session marked unranked
 - a completed protocol-1 session still showing its own seven games and overall score
 - all eleven games start, and popup, profile and test pages load, with no console errors
+
+**Verified in the browser for v1.3.0 (the Daily Brain Check):**
+- a first check played through with in-page drivers: Color Clash ran 40s, Reaction Speed 6 + 10 trials, Attention Storm 64 shapes, Visual Tracking 6 rounds; each result stored with `mode: 'daily'`, its settings and a seed, and logged to history with `source: 'daily'`
+- a game with too few valid trials (Reaction Speed, all false starts) gave no score and was left out of the check score
+- results against an earlier check: score change and previous best, per-game change, new-best badges, XP breakdown (+100, +score, +25 per best), level-up animation to level 2, next step naming the lowest ability
+- "Done" shows today's check as done with the time to the next one; a practice run is not counted, and resumes after a reload
+- the popup's daily card (in progress, done today) in dark and light themes, and the profile's daily section (level, best / last score, chart, history links to `daily.html?check=`)
+- practice Color Clash unchanged: 50s, no seed recorded, `source: 'practice'`; the Brain Test intro unchanged; no console errors
+- not timed: a full clean run end to end. The browser pane used for testing was hidden, which pauses animation frames, so Visual Tracking and Color Clash's timer were stepped by hand. About five minutes is the estimate from the settings (each game's `minutes` in `DAILY_GAMES`)
+
+---
+
+## 15. Daily Brain Check and Brain Level
+
+Five games, about five minutes, once a day (`js/core/daily.js`, `daily.html`).
+
+| # | Game | Ability | Setting |
+|---|------|---------|---------|
+| 1 | Color Clash | Attention | Medium, 40s (Brain Test: 50s) |
+| 2 | Reaction Speed | Processing Speed | Medium, 6 simple + 10 choice (8 + 14) |
+| 3 | Sequence Recall | Sequence Memory | Medium, unchanged |
+| 4 | Attention Storm | Sustained Attention | Medium, 2 blocks of 32 (3 blocks) |
+| 5 | Visual Tracking | Visual Tracking | Medium, 6 rounds (10) |
+
+**Why these settings.** Each game keeps its Medium mode, so the scoring curves (and their load factors) apply unchanged. Only counts and lengths are shortened, and each still clears the minimum its score needs: 8+ Color Clash answers, 4+ valid trials in each Reaction Speed part (so two guesses in six still score), 40+ Attention Storm shapes with 8+ stars, 6 Visual Tracking rounds (paused rounds are replayed). Sequence Recall is left alone: it is adaptive already, and starting at 4 digits would score a player whose span is 3 as 0. Shorter rounds are noisier, so daily scores are compared with daily scores - bests and changes come only from earlier daily checks, never from the Brain Test or practice.
+
+**Counting.** The first check started on a local day is *counted*: its seed is `hashSeed('daily-check', DAILY_VERSION, day)`, the same for everyone that day; it earns XP; it can set bests. Any other check that day is a practice run with a random seed, no XP and no bests. A check unfinished at the end of its day can't be resumed (its seed belongs to that day) and is marked abandoned. Bump `DAILY_VERSION` when the games or settings change.
+
+**Score.** The mean of the five ability scores from that check; a game with no valid score is left out, not counted as zero.
+
+**XP and Brain Level.** XP is stored with each counted check when it finishes, so a later rule change never takes a level away. A counted check earns +100 for finishing, + its score, +25 for each game that beats its previous best, and +50 for a new best score. A first check sets a baseline, so it earns no best bonuses. Level 2 needs 150 XP and each level after needs 50 more (`stepXp(n) = 100 + 50n`): a typical check (150-300 XP) levels up almost daily at first, and every two or three days by level 10.
+
+**Beat-your-best loop.** The instruction card before each game shows that game's best and last daily score ("beat it"). The results screen shows the score change since the last check, the change and a new-best mark per game, the XP breakdown with a level-up animation, and names the lowest ability with a button to practise its game. The popup's top card shows the level and either "Start today's check", "Resume" or "Done today" with the time until the next one.
