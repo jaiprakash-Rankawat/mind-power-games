@@ -16,7 +16,7 @@ import {
 import { makeTrials, summarize } from './logic/spatial-logic.js';
 
 const GAME_ID = 'spatial-rotation';
-const ACCENT = '#f472b6';
+const ACCENT = '#fbbf24';
 const FEEDBACK_MS = 900;
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -61,7 +61,7 @@ export function mount(root, ctx) {
   async function showSetup() {
     const L = [[0, 0], [0, 1], [0, 2], [1, 2], [1, 3]];
     const demo = el('div', { class: 'sr-demo', 'aria-hidden': 'true' },
-      shapeSvg(L, 0, '#a789ff'), el('span', { class: 'demo-arrow', text: 'vs' }), shapeSvg(L.map(([x, y]) => [1 - x, y]), 90, '#f472b6'),
+      shapeSvg(L, 0, '#60a5fa'), el('span', { class: 'demo-arrow', text: 'vs' }), shapeSvg(L.map(([x, y]) => [1 - x, y]), 90, '#fbbf24'),
       el('span', { class: 'demo-arrow', text: '-> MIRROR' }));
     setScreen(await setupPanel({
       gameId: GAME_ID,
@@ -167,8 +167,8 @@ export function mount(root, ctx) {
       idx += 1;
       if (idx >= plan.length) { finish(); return; }
       const t = plan[idx];
-      left.replaceChildren(shapeSvg(t.cells, 0, '#a789ff'));
-      right.replaceChildren(shapeSvg(t.probe, t.angle * t.direction, '#f472b6'));
+      left.replaceChildren(shapeSvg(t.cells, 0, '#60a5fa'));
+      right.replaceChildren(shapeSvg(t.probe, t.angle * t.direction, '#fbbf24'));
       left.classList.remove('good', 'bad');
       right.classList.remove('good', 'bad');
       usedMs = 0;

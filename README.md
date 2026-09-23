@@ -165,12 +165,35 @@ feel like one product:
 Color Clash adds glossy answer chips with colour-matched glow; Memory Grid and
 N-Back share the glossy tile grid.
 
-### Tutorials and theme
+### How-to-play tutorials
 
-The first time you open a game for practice, a short step-by-step tutorial with a
-live demo shows how it works; it can be skipped at any step. Games 4-11 can replay
-it from the **?** button on their setup screen. The Brain Test shows a one-line
-instruction card before each game instead.
+Every game has a three-step tutorial (`js/core/tutorial.js`, content in
+`js/core/tutorials.js`):
+
+1. **How it works** - the rule in one sentence and a worked example that shows the
+   right answer next to the tempting wrong one (the ink, not the word; the star, not
+   the look-alikes).
+2. **Try it** - two to five practice questions in the game's own look. A wrong
+   answer explains why ("That is what the word says - look at the colour of the
+   letters") and the player tries again; the step completes once they get them right.
+3. **Ready** - the controls and how the score works.
+
+It opens by itself the first time a game comes up - in practice, in the Daily Brain
+Check or in the Brain Test (before the game starts, so it never costs time) - and
+again from the **How to play** button on every setup screen and instruction card.
+The practice answers are checked by `tests/tutorials.test.mjs`.
+
+### Look: palette, icons and logo
+
+- **Blue palette** - blue and light blue on navy, with amber for bests
+  and targets. Every colour comes from the tokens in `css/theme.css` (dark and light),
+  apart from the games' own stimuli: Color Clash's inks, the red target, the star.
+  Game boards stay dark in both themes.
+- **Game icons** (`js/core/icons.js`) show how each game is played: the word RED in
+  blue ink, a lit path through a grid, a star among look-alikes, a route to a flag.
+- **Logo** - a brain with a spark (`icons/logo.svg`, and `icons/logo-small.svg` for
+  16 and 32 px). `node tools/render-icons.mjs` redraws the toolbar PNGs from them
+  with headless Chrome.
 
 The sun / moon button in every page header switches between dark and light themes,
 and the choice is remembered.
@@ -278,9 +301,11 @@ generated puzzles against an independent solver). Arrow keys / WASD or click.
    matches the other games, and `createRng(seedFor(ctx))` for its randomness.
 3. Honour `ctx.official` (fixed settings, no setup screen, `completeRound` hands off).
 4. Add an entry to `GAMES` in `js/core/games.js` (with `official`, `category`,
-   `instruction`, `keys`, `minutes`, and `tutorial` steps) and a scoring curve to
-   `ABILITIES` in `js/core/profile.js`. Setting `locked: true` keeps an unfinished
-   game out of the popup, the game page and the Brain Test.
+   `instruction`, `keys`, `minutes`) and a scoring curve to `ABILITIES` in
+   `js/core/profile.js`. Setting `locked: true` keeps an unfinished game out of the
+   popup, the game page and the Brain Test.
+5. Add a tutorial to `js/core/tutorials.js` and an icon to `js/core/icons.js` -
+   `tests/tutorials.test.mjs` fails until both exist.
 
 ## Local development
 
@@ -311,6 +336,10 @@ js/core/charts.js  hand-built SVG radar, line chart and meter (no chart library)
 js/core/session.js Brain Test sessions: order, persistence, resume, eligibility
 js/core/daily.js   Daily Brain Check: settings, day seed, XP and Brain Level, persistence
 js/core/level-ui.js Brain Level badge and XP bar (popup, profile, daily check)
+js/core/score-reveal.js animated "out of 100" score ring (Brain Test and daily results)
+js/core/icons.js   game icons (SVG), each a hint at how the game is played
+js/core/tutorial.js how-to-play overlay: how it works, try it, ready
+js/core/tutorials.js each game's rule, worked example and practice questions
 js/core/result.js  standard GameResult envelope (wraps each game's own result)
 js/core/rng.js     seeded random numbers (every stimulus reproducible from a seed)
 js/core/game-kit.js shared setup / countdown / results screens for games 4-11
@@ -323,10 +352,11 @@ css/viz.css        chart styles shared by popup and profile
 tests/             npm test suites + dev-only browser harness (not shipped)
 js/games/          the eleven games
 css/               theme + page styles
-icons/             generated PNGs
+icons/             logo.svg + logo-small.svg, and the toolbar PNGs rendered from them
 INSTALL.md         how to load, update, package and publish
 package.json       npm script aliases (no dependencies, no bundler)
 package.ps1        builds dist/mind-power-games-v<version>.zip
 tools/validate.mjs pre-flight: manifest, icons, CSP, asset + import paths
+tools/render-icons.mjs redraws icons/icon*.png from the logo SVGs (headless Chrome)
 dist/              build output (not part of the extension)
 ```

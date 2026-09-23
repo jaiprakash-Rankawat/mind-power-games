@@ -10,12 +10,12 @@
 /* progress: one segment per game */
 .bt-progress{display:flex;gap:6px;margin:-4px 0 18px}
 .bt-seg{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.08);transition:background .3s ease}
-.bt-seg.done{background:linear-gradient(90deg,var(--brand),#5b7bff)}
-.bt-seg.now{background:rgba(124,92,255,.45);box-shadow:0 0 0 1px rgba(124,92,255,.7)}
+.bt-seg.done{background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+.bt-seg.now{background:rgb(var(--brand-rgb) / .45);box-shadow:0 0 0 1px rgb(var(--brand-rgb) / .7)}
 
 .btn.big{padding:15px 30px;font-size:15px;border-radius:14px}
 a.btn{display:inline-block;text-decoration:none}
-.ghost-btn.danger{color:var(--bad);border-color:rgba(251,113,133,.5)}
+.ghost-btn.danger{color:var(--bad);border-color:rgb(var(--bad-rgb) / .5)}
 
 /* intro */
 .bt-intro .lead{margin-bottom:18px}
@@ -28,7 +28,8 @@ a.btn{display:inline-block;text-decoration:none}
   width:20px;height:20px;flex:none;border-radius:50%;display:grid;place-items:center;
   font-size:10.5px;font-weight:800;color:var(--muted);background:rgba(255,255,255,.06);
 }
-.bt-icon{font-size:17px;flex:none}
+.bt-icon{width:24px;height:24px;flex:none;color:var(--brand)}
+.bt-icon svg,.bt-card-icon svg{width:100%;height:100%;display:block}
 .bt-name{font-size:13px;font-weight:650}
 .bt-cat{margin-left:auto;font-size:10.5px;color:var(--muted);text-align:right}
 .bt-tips{margin:0 0 20px;padding-left:18px}
@@ -39,26 +40,26 @@ a.btn{display:inline-block;text-decoration:none}
 .bt-card h2{font-size:24px;margin:6px 0 10px}
 .bt-step{font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:800;margin-bottom:14px}
 .bt-card-icon{
-  width:74px;height:74px;margin:0 auto 6px;border-radius:22px;display:grid;place-items:center;font-size:36px;
-  background:linear-gradient(140deg,rgba(124,92,255,.35),rgba(34,211,238,.16));border:1px solid var(--line);
+  width:74px;height:74px;margin:0 auto 6px;border-radius:22px;display:grid;place-items:center;padding:15px;color:var(--brand);
+  background:linear-gradient(140deg,rgb(var(--brand-rgb) / .35),rgb(var(--brand-2-rgb) / .16));border:1px solid var(--line);
 }
 .bt-rule{font-size:16px;line-height:1.55;margin:18px auto 6px;max-width:440px}
 .bt-done{
   display:inline-block;margin-bottom:16px;padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:700;
-  color:var(--good);background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.45);
+  color:var(--good);background:rgb(var(--good-rgb) / .12);border:1px solid rgb(var(--good-rgb) / .45);
 }
 
 .bt-note{
   margin:16px auto 0;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.6;max-width:520px;
   color:var(--muted);background:rgba(255,255,255,.035);border:1px solid var(--line);text-align:left;
 }
-.bt-note.ok{color:var(--good);border-color:rgba(52,211,153,.35)}
+.bt-note.ok{color:var(--good);border-color:rgb(var(--good-rgb) / .35)}
 
 /* brain profile */
 .bt-overall{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:2px 0 4px}
 .bt-overall-num{
   font-size:84px;font-weight:800;line-height:1;letter-spacing:-2px;
-  background:linear-gradient(135deg,#c4b5ff,#7c5cff 55%,#22d3ee);
+  background:linear-gradient(135deg,var(--brand-hi),var(--brand) 55%,var(--brand-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .bt-overall-of{font-size:20px;color:var(--muted);font-weight:700}
@@ -74,10 +75,54 @@ a.btn{display:inline-block;text-decoration:none}
 .bt-row .meter{height:6px}
 .bt-profile .honest{text-align:left;margin:12px auto 18px;max-width:560px}
 
+/* score ring (core/score-reveal.js): Brain Test and Daily Brain Check results */
+.sr-ring{position:relative;width:196px;height:196px;margin:8px auto 6px}
+.sr-ring svg{width:100%;height:100%;display:block;overflow:visible}
+.sr-track,.sr-arc,.sr-band{fill:none;stroke-width:13}
+.sr-track{stroke:rgb(var(--brand-rgb) / .16)}
+.sr-band{stroke:rgba(255,255,255,.13)}
+.sr-arc{stroke:url(#srGrad);stroke-linecap:round;stroke-dasharray:100;filter:drop-shadow(0 0 7px rgb(var(--brand-rgb) / .55))}
+.sr-g1{stop-color:var(--brand-hi)}
+.sr-g2{stop-color:var(--brand)}
+.sr-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sr-num{
+  font-size:62px;font-weight:800;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums;
+  background:linear-gradient(135deg,var(--brand-hi),var(--brand) 55%,var(--brand-2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sr-of{font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--muted);margin-top:6px}
+.sr-ring.empty .sr-num{color:var(--muted);background:none}
+/* landing: one ripple and a pop of the number */
+.sr-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgb(var(--brand-rgb) / .6);opacity:0;pointer-events:none}
+.sr-ring.landed::after{animation:srRipple .9s ease-out}
+.sr-ring.landed .sr-num{animation:srPop .5s cubic-bezier(.2,1.6,.5,1)}
+@keyframes srRipple{0%{transform:scale(.94);opacity:.85}100%{transform:scale(1.28);opacity:0}}
+@keyframes srPop{0%,100%{transform:scale(1)}40%{transform:scale(1.13)}}
+
+.sr-headline{font-size:17px;font-weight:650;margin:10px 0 2px;text-align:center}
+.sr-headline b{color:var(--brand-hi);font-size:20px}
+
+/* Brain Test: the rest of the profile waits for the ring to land, then follows it in */
+.sr-later{transition:opacity .5s ease,transform .55s cubic-bezier(.2,1.2,.5,1);transition-delay:calc(var(--d,0) * 110ms)}
+.sr-waiting .sr-later{opacity:0;transform:translateY(14px);pointer-events:none}
+.sr-stagger .bt-row{transition:opacity .4s ease,transform .45s ease;transition-delay:calc(var(--i,0) * 55ms + 200ms)}
+.sr-waiting .sr-stagger .bt-row{opacity:0;transform:translateX(-10px)}
+.sr-stagger .meter-fill{transition:clip-path .8s cubic-bezier(.2,.8,.2,1) calc(var(--i,0) * 55ms + 350ms)}
+.sr-waiting .sr-stagger .meter-fill{clip-path:inset(0 100% 0 0)}
+.bt-profile-grid .radar-viz svg{transition:transform .8s cubic-bezier(.2,1.2,.5,1) .15s}
+.sr-waiting .bt-profile-grid .radar-viz svg{transform:scale(.6)}
+
+@media (prefers-reduced-motion:reduce){
+  .sr-later,.sr-stagger .bt-row,.sr-stagger .meter-fill,.bt-profile-grid .radar-viz svg{transition:none}
+  .sr-ring.landed::after,.sr-ring.landed .sr-num{animation:none}
+}
+
 @media (max-width:640px){
   .bt-games{grid-template-columns:1fr}
   .bt-profile-grid{grid-template-columns:1fr}
   .bt-overall-num{font-size:68px}
+  .sr-ring{width:172px;height:172px}
+  .sr-num{font-size:54px}
 }
 
 /* same look as the profile page's honesty note (profile.css isn't loaded here) */
@@ -88,11 +133,13 @@ a.btn{display:inline-block;text-decoration:none}
 
 /* ---------- light mode ---------- */
 [data-theme="light"] .bt-seg{background:rgba(0,0,0,.08)}
-[data-theme="light"] .bt-seg.now{background:rgba(109,74,255,.15);box-shadow:0 0 0 1px rgba(109,74,255,.35)}
+[data-theme="light"] .bt-seg.now{background:rgb(var(--brand-rgb) / .15);box-shadow:0 0 0 1px rgb(var(--brand-rgb) / .35)}
 [data-theme="light"] .bt-games li{background:var(--card-hi);border-color:var(--line)}
 [data-theme="light"] .bt-num{background:rgba(0,0,0,.06)}
-[data-theme="light"] .bt-card-icon{background:linear-gradient(140deg,rgba(109,74,255,.12),rgba(14,165,233,.08))}
+[data-theme="light"] .bt-card-icon{background:linear-gradient(140deg,rgb(var(--brand-rgb) / .12),rgb(var(--brand-2-rgb) / .08))}
 [data-theme="light"] .bt-note{background:rgba(0,0,0,.025);border-color:var(--line)}
-[data-theme="light"] .bt-note.ok{background:rgba(16,185,129,.1)}
+[data-theme="light"] .bt-note.ok{background:rgb(var(--good-rgb) / .1)}
 [data-theme="light"] .bt-row{background:var(--card-hi);border-color:var(--line)}
 [data-theme="light"] .bt-profile .honest{background:rgba(0,0,0,.025);border-color:var(--line)}
+[data-theme="light"] .sr-arc{filter:drop-shadow(0 0 5px rgb(var(--brand-rgb) / .3))}
+[data-theme="light"] .sr-headline b{color:var(--brand)}

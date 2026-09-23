@@ -3,6 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { GAMES } from '../js/core/games.js';
+import { TUTORIALS } from '../js/core/tutorials.js';
 import { abilityFor, ABILITIES } from '../js/core/profile.js';
 import { makeResult } from '../js/core/result.js';
 import {
@@ -25,7 +26,7 @@ test('brain test: every new game has fixed settings, a module, instructions and 
     const g = GAMES.find((x) => x.id === id);
     assert.deepEqual(officialSettings(id), { difficulty: 'medium' });
     assert.ok(g.module && g.instruction && g.keys && g.category && g.minutes);
-    assert.equal(g.tutorial.length, 3);
+    assert.ok(TUTORIALS[id], `${id} has a tutorial`);
     assert.ok(abilityFor(id), `${id} has a scoring curve`);
   }
 });

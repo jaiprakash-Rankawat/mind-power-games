@@ -20,7 +20,7 @@ import {
 } from './logic/path-finder-logic.js';
 
 const GAME_ID = 'path-finder';
-const ACCENT = '#34d399';
+const ACCENT = '#60a5fa';
 const REVIEW_MS = { perfect: 1300, other: 2400 };
 const MOVES = {
   arrowup: [-1, 0], arrowdown: [1, 0], arrowleft: [0, -1], arrowright: [0, 1],

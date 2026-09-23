@@ -2,7 +2,7 @@ import { getGame } from './core/games.js';
 import { initAudio, toggleAudio, setVolume, isEnabled, getVolume } from './core/audio.js';
 import { el } from './core/util.js';
 import { wireThemeToggle } from './core/theme-toggle.js';
-import { hasSeenTutorial, showTutorial } from './core/tutorial.js';
+import { showTutorialOnce } from './core/tutorial.js';
 
 const stage = document.getElementById('stage');
 const params = new URLSearchParams(location.search);
@@ -74,10 +74,8 @@ async function boot() {
 
   const mod = await import(`./games/${game.module}`);
   
-  // Show tutorial on first play
-  if (game.tutorial && game.tutorial.length && !(await hasSeenTutorial(game.id))) {
-    await showTutorial(document.body, game.id, game.tutorial);
-  }
+  // the how-to-play tutorial opens by itself the first time a game is played
+  await showTutorialOnce(game.id);
 
   mod.mount(stage, { game });
 }

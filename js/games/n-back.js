@@ -7,10 +7,11 @@ import { el, randInt } from '../core/util.js';
 import { saveBest, getBest, recordRound } from '../core/storage.js';
 import { sfx } from '../core/audio.js';
 import { countUp } from '../core/fx.js';
-import { createStage, createMeter, gradeChip, resultFx, abilityChip } from '../core/arcade.js';
+import { createStage, createMeter, gradeChip, resultFx, abilityChip, CONFETTI } from '../core/arcade.js';
 import { logRun } from '../core/profile.js';
+import { howToPlayButton } from '../core/tutorial.js';
 
-const ACCENT = '#a789ff';
+const ACCENT = '#60a5fa';
 
 const COLORS = ['#ff4d4d', '#4d8bff', '#2ee88a', '#ffd23f', '#b46bff', '#ff8c42'];
 
@@ -107,7 +108,8 @@ export function mount(root, ctx) {
       el('span', { class: 'nb-step nb-hit', text: 'MATCH' })
     );
 
-    const panel = el('div', { class: 'panel' },
+    const panel = el('div', { class: 'panel setup-panel' },
+      howToPlayButton('n-back', { className: 'ghost-btn tut-open corner' }),
       el('h2', { text: 'N-Back' }),
       el('p', { class: 'lead', text: 'The hardest working-memory task there is: hold a moving window in your head and keep updating it.' }),
 
@@ -600,7 +602,7 @@ export function mount(root, ctx) {
     setScreen(panel, () => { document.removeEventListener('keydown', onKey); confetti.stop(); });
 
     countUp(scoreEl, r.score, 900);   // no rAF wrapper: a background tab would never start it
-    if (isRecord && r.score > 0) confetti.start(['#a789ff', '#37dcf2', '#34d399', '#fbbf24']);
+    if (isRecord && r.score > 0) confetti.start(CONFETTI);
   }
 
   // Brain Test: fixed settings (including the block count), no difficulty screen.

@@ -6,10 +6,11 @@ import { el, randInt } from '../core/util.js';
 import { saveBest, getBest, recordRound } from '../core/storage.js';
 import { sfx, note } from '../core/audio.js';
 import { countUp } from '../core/fx.js';
-import { createStage, createMeter, gradeChip, resultFx, abilityChip } from '../core/arcade.js';
+import { createStage, createMeter, gradeChip, resultFx, abilityChip, CONFETTI } from '../core/arcade.js';
 import { logRun } from '../core/profile.js';
+import { howToPlayButton } from '../core/tutorial.js';
 
-const ACCENT = '#a789ff';
+const ACCENT = '#60a5fa';
 
 const MODES = {
   easy: {
@@ -53,7 +54,8 @@ export function mount(root, ctx) {
       demoGrid.append(t);
     }
 
-    const panel = el('div', { class: 'panel' },
+    const panel = el('div', { class: 'panel setup-panel' },
+      howToPlayButton('memory-grid', { className: 'ghost-btn tut-open corner' }),
       el('h2', { text: 'Memory Grid' }),
       el('p', { class: 'lead', text: 'Watch the path light up, then walk it back. Every level adds one more tile.' }),
 
@@ -448,7 +450,7 @@ export function mount(root, ctx) {
     setScreen(panel, () => { document.removeEventListener('keydown', onKey); confetti.stop(); });
 
     countUp(scoreEl, r.score, 900);   // no rAF wrapper: a background tab would never start it
-    if (isRecord && r.score > 0) confetti.start(['#a789ff', '#37dcf2', '#34d399', '#fbbf24']);
+    if (isRecord && r.score > 0) confetti.start(CONFETTI);
   }
 
   // Brain Test: fixed settings, no difficulty screen.

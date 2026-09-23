@@ -9,6 +9,7 @@ import { dailyState, dailyOrder, dailyMinutes } from './core/daily.js';
 import { levelBar } from './core/level-ui.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { el } from './core/util.js';
+import { iconSvg } from './core/icons.js';
 import { wireThemeToggle } from './core/theme-toggle.js';
 
 noteFirstOpen();
@@ -143,7 +144,7 @@ function abilityRow(a) {
     : `Last round: ${a.lastMetric}  ·  ${a.runs} round${a.runs === 1 ? '' : 's'} scored`;
 
   return el('div', { class: 'ability' },
-    el('span', { class: 'ab-icon', 'aria-hidden': 'true', text: a.icon }),
+    el('span', { class: 'ab-icon', 'aria-hidden': 'true', html: iconSvg(a.game) }),
     el('div', { class: 'ab-main' },
       el('div', { class: 'ab-head' },
         el('b', { class: 'ab-name', text: a.name }),

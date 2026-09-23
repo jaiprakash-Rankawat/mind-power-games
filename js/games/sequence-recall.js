@@ -20,7 +20,7 @@ import {
 } from './logic/sequence-recall-logic.js';
 
 const GAME_ID = 'sequence-recall';
-const ACCENT = '#37dcf2';
+const ACCENT = '#60a5fa';
 const LEAD_MS = 550;                            // blank card before the first digit
 const REVIEW_MS = { right: 950, wrong: 2000 };
 

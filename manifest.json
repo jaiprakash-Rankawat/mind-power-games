@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Mind Power Games",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Eleven short cognitive games. A 5-minute Daily Brain Check, the full Brain Test, and practice to track your performance over time.",
   "permissions": ["storage", "unlimitedStorage"],
   "action": {

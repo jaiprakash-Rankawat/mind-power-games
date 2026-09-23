@@ -11,6 +11,7 @@ import { countUp } from '../core/fx.js';
 import { createStage, createMeter, gradeChip, resultFx, abilityChip } from '../core/arcade.js';
 import { logRun } from '../core/profile.js';
 import { createRng } from '../core/rng.js';
+import { howToPlayButton } from '../core/tutorial.js';
 import { median } from '../core/stats.js';
 
 /* Two palettes. "safe" is built on the Okabe-Ito colour-blind-safe set, so the
@@ -126,7 +127,8 @@ export function mount(root, ctx) {
       sw
     );
 
-    const panel = el('div', { class: 'panel' },
+    const panel = el('div', { class: 'panel setup-panel' },
+      howToPlayButton('stroop', { className: 'ghost-btn tut-open corner' }),
       el('h2', { text: 'Color Clash' }),
       el('p', { class: 'lead', text: 'Your brain reads the word faster than it sees the ink. Beat the reflex.' }),
 

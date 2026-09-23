@@ -103,7 +103,6 @@ export function summarize(s) {
       gameId,
       id: a ? a.id : gameId,
       name: a ? a.name : gameId,
-      icon: a ? a.icon : '',
       score: r && typeof r.score === 'number' ? r.score : null
     };
   });

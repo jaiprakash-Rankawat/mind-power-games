@@ -7,6 +7,7 @@ import { levelBar } from './core/level-ui.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { meter } from './core/charts.js';
 import { el } from './core/util.js';
+import { iconSvg } from './core/icons.js';
 import { wireThemeToggle } from './core/theme-toggle.js';
 
 noteFirstOpen();
@@ -118,7 +119,7 @@ function gameCard(game, profile) {
 
   return el('button', { class: 'game-card', type: 'button', title: game.tagline, onclick: () => openGame(game.id) },
     el('span', { class: 'gc-row' },
-      el('span', { class: 'gc-icon', 'aria-hidden': 'true', text: game.icon }),
+      el('span', { class: 'gc-icon', 'aria-hidden': 'true', html: iconSvg(game.id) }),
       el('span', { class: 'gc-title', text: game.name })),
     el('span', { class: 'gc-row2' },
       el('span', { class: 'gc-ability',

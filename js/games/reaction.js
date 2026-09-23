@@ -17,7 +17,7 @@ import {
 } from './logic/reaction-logic.js';
 
 const GAME_ID = 'reaction';
-const ACCENT = '#34d399';
+const ACCENT = '#4ade80';
 const MAX_FALSE_STARTS = 5;          // per trial, then it is scored as a miss and we move on
 
 export const MODES = {

@@ -117,7 +117,6 @@ export function summarizeCheck(s, prior) {
       gameId,
       id: a ? a.id : gameId,
       name: a ? a.name : gameId,
-      icon: a ? a.icon : '',
       score,
       best,
       last,

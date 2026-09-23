@@ -8,10 +8,9 @@ import { saveBest, getBest, recordRound } from './storage.js';
 import { logRun } from './profile.js';
 import { sfx } from './audio.js';
 import { countUp } from './fx.js';
-import { gradeChip, abilityChip, resultFx } from './arcade.js';
+import { gradeChip, abilityChip, resultFx, CONFETTI } from './arcade.js';
 import { randomSeed } from './rng.js';
-import { getGame } from './games.js';
-import { showTutorial } from './tutorial.js';
+import { howToPlayButton } from './tutorial.js';
 
 /** Screen swapper with teardown, as each original game has. */
 export function createScreens(root) {
@@ -38,17 +37,8 @@ export async function setupPanel({ gameId, title, lead, demo, rules, modes, best
   const bests = {};
   for (const m of Object.values(modes)) bests[m.key] = await getBest(gameId, m.key);
 
-  const gameMeta = getGame(gameId);
-  const tutorial = gameMeta?.tutorial;
-  const helpBtn = tutorial && tutorial.length
-    ? el('button', { class: 'ghost-btn', type: 'button', title: 'Replay tutorial',
-        style: { position: 'absolute', top: '14px', right: '14px', fontSize: '16px', width: '32px', height: '32px', display: 'grid', placeItems: 'center', borderRadius: '50%' },
-        onclick: () => showTutorial(document.body, gameId, tutorial)
-      }, '?')
-    : null;
-
-  return el('div', { class: 'panel', style: { position: 'relative' } },
-    helpBtn,
+  return el('div', { class: 'panel setup-panel' },
+    howToPlayButton(gameId, { className: 'ghost-btn tut-open corner' }),
     el('h2', { text: title }),
     el('p', { class: 'lead', text: lead }),
     el('div', { class: 'rules' },
@@ -133,7 +123,7 @@ export function resultsPanel({ subtitle, grade, headline, verdict, isRecord, pre
   document.addEventListener('keydown', onKey);
   const confetti = resultFx(panel);
   if (headline === undefined) countUp(scoreEl, score, 900);
-  if (isRecord && score > 0) confetti.start(confettiColors || ['#a789ff', '#37dcf2', '#34d399', '#fbbf24']);
+  if (isRecord && score > 0) confetti.start(confettiColors || CONFETTI);
   return { node: panel, cleanup: () => { document.removeEventListener('keydown', onKey); confetti.stop(); } };
 }
 

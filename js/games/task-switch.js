@@ -16,7 +16,7 @@ import {
 import { makeSequence, summarize, pointsFor, RULES } from './logic/task-switch-logic.js';
 
 const GAME_ID = 'task-switch';
-const RULE_COLORS = { parity: '#a789ff', magnitude: '#37dcf2' };
+const RULE_COLORS = { parity: '#93c5fd', magnitude: '#fcd34d' };
 const FEEDBACK_MS = 260;
 const GAP_MS = 320;
 

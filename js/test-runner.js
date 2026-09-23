@@ -9,6 +9,8 @@
 
 import { getGame } from './core/games.js';
 import { el } from './core/util.js';
+import { iconSvg } from './core/icons.js';
+import { howToPlayButton, showTutorialOnce } from './core/tutorial.js';
 import { wireSoundControl } from './core/sound-control.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { makeResult } from './core/result.js';
@@ -19,6 +21,9 @@ import {
 } from './core/session.js';
 import { radarChart, meter } from './core/charts.js';
 import { TYPICAL } from './core/profile.js';
+import { scoreRing, prefersReducedMotion } from './core/score-reveal.js';
+import { resultFx, CONFETTI } from './core/arcade.js';
+import { sfx } from './core/audio.js';
 
 const stage = document.getElementById('stage');
 const progressEl = document.getElementById('progress');
@@ -104,7 +109,7 @@ function intro() {
     el('ol', { class: 'bt-games' },
       games.map((g, i) => el('li', {},
         el('span', { class: 'bt-num', text: String(i + 1) }),
-        el('span', { class: 'bt-icon', 'aria-hidden': 'true', text: g.icon }),
+        el('span', { class: 'bt-icon', 'aria-hidden': 'true', html: iconSvg(g.id) }),
         el('span', { class: 'bt-name', text: g.name }),
         el('span', { class: 'bt-cat', text: g.category })))
     ),
@@ -148,15 +153,17 @@ function instructions(s, finishedName = null) {
   show(el('div', { class: 'panel bt-card center' },
     finishedName ? el('span', { class: 'bt-done', text: `✓ ${finishedName} complete` }) : null,
     el('p', { class: 'bt-step', text: `GAME ${s.index + 1} / ${s.order.length}` }),
-    el('div', { class: 'bt-card-icon', 'aria-hidden': 'true', text: g.icon }),
+    el('div', { class: 'bt-card-icon', 'aria-hidden': 'true', html: iconSvg(g.id) }),
     el('h2', { text: g.name }),
     el('span', { class: 'pill', text: g.category }),
     el('p', { class: 'bt-rule', text: g.instruction }),
     el('p', { class: 'foot-hint', text: g.keys }),
     el('div', { class: 'actions' },
+      howToPlayButton(gameId, { className: 'btn tut-open' }),
       el('button', { class: 'btn primary big', type: 'button', onclick: go }, 'Start')),
     el('p', { class: 'foot-hint', text: 'Press Enter to start' })
   ), enterTo(go));
+  showTutorialOnce(gameId);          // first time this game comes up: learn it before the test starts it
 }
 
 async function play(s) {
@@ -202,7 +209,7 @@ function profile(s, { readOnly = false } = {}) {
   const day = new Date(s.completedAt || s.updatedAt).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 
   const rows = sum.abilities.map((a) => el('div', { class: 'bt-row' },
-    el('span', { class: 'bt-icon', 'aria-hidden': 'true', text: a.icon }),
+    el('span', { class: 'bt-icon', 'aria-hidden': 'true', html: iconSvg(a.gameId) }),
     el('span', { class: 'bt-row-main' },
       el('span', { class: 'bt-row-head' },
         el('b', { text: a.name }),
@@ -210,6 +217,7 @@ function profile(s, { readOnly = false } = {}) {
       meter(a.score, TYPICAL),
       el('span', { class: 'bt-row-game', text: getGame(a.gameId)?.name || a.gameId }))
   ));
+  rows.forEach((r, i) => r.style.setProperty('--i', i));   // stagger order for the reveal
 
   const copyBtn = el('button', { class: 'btn', type: 'button' }, 'Copy result');
   copyBtn.addEventListener('click', async () => {
@@ -227,29 +235,50 @@ function profile(s, { readOnly = false } = {}) {
     }
   });
 
-  show(el('div', { class: 'panel result-panel bt-profile' },
+  const ring = scoreRing(sum.overall, { typical: TYPICAL });
+  const later = (d, node) => { node.classList.add('sr-later'); node.style.setProperty('--d', d); return node; };
+
+  const panel = el('div', { class: 'panel result-panel bt-profile' },
     el('p', { class: 'result-sub', text: (readOnly ? 'Brain Test · ' : 'Brain Test complete · ') + day }),
     el('p', { class: 'bt-kicker center', text: 'Overall performance' }),
-    el('div', { class: 'bt-overall' },
-      el('span', { class: 'bt-overall-num', text: sum.overall === null ? '—' : String(sum.overall) }),
-      el('span', { class: 'bt-overall-of', text: '/ 100' })),
-    el('p', { class: 'result-sub', text: sum.overall === null
-      ? 'Not enough valid results to calculate an overall score.'
-      : `Your performance score was ${sum.overall} out of 100.` }),
+    ring.node,
+    later(0, sum.overall === null
+      ? el('p', { class: 'result-sub', text: 'Not enough valid results to calculate an overall score.' })
+      : el('div', {},
+          el('p', { class: 'sr-headline' }, 'You scored ', el('b', { text: String(sum.overall) }), ' out of 100'),
+          el('p', { class: 'result-sub', text: sum.measured === sum.total
+            ? `The average of your ${sum.total} game scores.`
+            : `The average of the ${sum.measured} games with a valid score (out of ${sum.total}).` }))),
 
-    el('div', { class: 'bt-profile-grid' },
+    later(1, el('div', { class: 'bt-profile-grid' },
       radarChart({ axes: sum.abilities.map((a) => ({ label: a.name, value: a.score })), size: 300, typical: TYPICAL, emptyLabel: 'no valid score' }),
-      el('div', { class: 'bt-rows' }, rows)),
+      el('div', { class: 'bt-rows sr-stagger' }, rows))),
 
-    el('p', { class: 'bt-note ' + (sum.eligible ? 'ok' : '') , text: sum.eligible
+    later(2, el('p', { class: 'bt-note ' + (sum.eligible ? 'ok' : '') , text: sum.eligible
       ? '✓ Counts toward rankings: your first Brain Test today, with no restarted games.'
-      : 'Not counted toward rankings. ' + sum.reasons.join(' ') }),
-    el('p', { class: 'honest', text: 'Scores compare your results with reference points from published research on similar tasks, on a 0-100 scale where 50 is the reference midpoint. They are not an IQ score, a comparison with other players, or a medical assessment.' }),
+      : 'Not counted toward rankings. ' + sum.reasons.join(' ') })),
+    later(3, el('p', { class: 'honest', text: 'Scores compare your results with reference points from published research on similar tasks, on a 0-100 scale where 50 is the reference midpoint. They are not an IQ score, a comparison with other players, or a medical assessment.' })),
 
-    el('div', { class: 'actions' },
+    later(4, el('div', { class: 'actions' },
       copyBtn,
-      el('a', { class: 'btn primary', href: 'profile.html' }, 'View full profile'))
-  ));
+      el('a', { class: 'btn primary', href: 'profile.html' }, 'View full profile')))
+  );
+
+  show(panel);
+  if (readOnly) return;                  // viewing a past test: no replay
+
+  /* Just finished: the ring sweeps up to the score, then lands with a chime and
+     confetti (finishing all the games is the achievement), and the profile follows. */
+  panel.classList.add('sr-waiting');
+  const fx = resultFx(panel);
+  ring.play({
+    onLanded: () => {
+      panel.classList.remove('sr-waiting');
+      if (sum.overall === null) return;
+      sfx.finish();
+      if (!prefersReducedMotion()) fx.start(CONFETTI);
+    }
+  });
 }
 
 /* -------------------------------------------------------------------- boot */

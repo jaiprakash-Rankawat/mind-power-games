@@ -10,7 +10,7 @@
 .hero-label{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:650}
 .hero-figure{
   font-size:88px;font-weight:800;line-height:1;margin:6px 0 10px;letter-spacing:-2px;
-  background:linear-gradient(135deg,#b9a6ff,#7c5cff 55%,#22d3ee);
+  background:linear-gradient(135deg,var(--brand-hi),var(--brand) 55%,var(--brand-2));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .hero-status{color:var(--text);font-size:13.5px;margin-top:12px;line-height:1.5}
@@ -28,9 +28,10 @@
   background:var(--card-hi);border:1px solid var(--line);
 }
 .ab-icon{
-  width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:19px;
-  background:linear-gradient(140deg,rgba(124,92,255,.32),rgba(34,211,238,.14));border:1px solid var(--line);
+  width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;color:var(--brand);
+  background:linear-gradient(140deg,rgb(var(--brand-rgb) / .32),rgb(var(--brand-2-rgb) / .14));border:1px solid var(--line);
 }
+.ab-icon svg{width:27px;height:27px;display:block}
 .ab-main{flex:1;min-width:0}
 .ab-head{display:flex;align-items:center;gap:8px}
 .ab-name{font-size:14.5px}
@@ -47,7 +48,7 @@
   color:var(--muted);background:rgba(255,255,255,.03);
 }
 .seg-btn:hover{color:var(--text)}
-.seg-btn[aria-pressed="true"]{color:var(--text);background:rgba(124,92,255,.22);border-color:rgba(124,92,255,.6)}
+.seg-btn[aria-pressed="true"]{color:var(--text);background:rgb(var(--brand-rgb) / .22);border-color:rgb(var(--brand-rgb) / .6)}
 .chart-slot{min-height:230px}
 
 /* table twin of the trend chart */
@@ -81,12 +82,12 @@
   padding:11px 14px;border-radius:12px;text-decoration:none;color:var(--text);
   background:var(--card-hi);border:1px solid var(--line);transition:border-color .15s ease;
 }
-.bt-item:hover{border-color:rgba(124,92,255,.55)}
+.bt-item:hover{border-color:rgb(var(--brand-rgb) / .55)}
 .bt-item-day{font-size:13px}
 .bt-item-score{font-size:12px;color:var(--muted)}
 .bt-item-score b{font-size:17px;color:var(--text)}
 .bt-item-go{font-size:12px;color:var(--brand-2)}
-.pill.ranked{color:var(--good);border-color:rgba(52,211,153,.5)}
+.pill.ranked{color:var(--good);border-color:rgb(var(--good-rgb) / .5)}
 @media (max-width:640px){
   .bt-head{flex-direction:column}
   .bt-item{grid-template-columns:1fr auto}
@@ -99,10 +100,10 @@
 
 /* ---------- light mode ---------- */
 [data-theme="light"] .ability{background:var(--card-hi);border-color:var(--line)}
-[data-theme="light"] .ab-icon{background:linear-gradient(140deg,rgba(109,74,255,.12),rgba(14,165,233,.08))}
+[data-theme="light"] .ab-icon{background:linear-gradient(140deg,rgb(var(--brand-rgb) / .12),rgb(var(--brand-2-rgb) / .08))}
 [data-theme="light"] .seg-btn{background:rgba(0,0,0,.03);color:var(--muted)}
 [data-theme="light"] .seg-btn:hover{color:var(--text)}
-[data-theme="light"] .seg-btn[aria-pressed="true"]{color:var(--brand);background:rgba(109,74,255,.12);border-color:rgba(109,74,255,.4)}
+[data-theme="light"] .seg-btn[aria-pressed="true"]{color:var(--brand);background:rgb(var(--brand-rgb) / .12);border-color:rgb(var(--brand-rgb) / .4)}
 [data-theme="light"] .honest{background:rgba(0,0,0,.025);border-color:var(--line)}
 [data-theme="light"] .bt-item{background:var(--card-hi);border-color:var(--line)}
-[data-theme="light"] .bt-item:hover{border-color:rgba(109,74,255,.35)}
+[data-theme="light"] .bt-item:hover{border-color:rgb(var(--brand-rgb) / .35)}

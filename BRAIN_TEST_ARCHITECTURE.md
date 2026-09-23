@@ -100,6 +100,9 @@ js/core/
   session.js      Brain Test sessions: state machine, persistence, eligibility
   daily.js        Daily Brain Check: settings, day seed, XP and Brain Level, persistence
   level-ui.js     Brain Level badge and XP bar
+  score-reveal.js the animated "out of 100" score ring on the Brain Test and Daily Brain Check results
+  icons.js        game icons (SVG), each showing how its game is played
+  tutorial.js     how-to-play overlay; tutorials.js holds each game's rule, example and practice
   result.js       standard GameResult envelope (wraps a game's native result)
   profile.js      scoring curves, run history, rolling Performance Score, trend
   rng.js          seeded PRNG (mulberry32) + seed hashing
@@ -252,7 +255,7 @@ All data lives in `chrome.storage.local` on the player's machine. The manifest r
 | `analytics:firstOpenAt` | first time any extension page opened | `analytics.js` |
 | `profile.migrated` | one-time import of pre-profile bests done | `profile.js` |
 | `soundOn`, `soundVolume`, `stroop.palette`, `theme` | preferences | audio, Color Clash, theme toggle |
-| `tutorial:seen:<gameId>` | the first-play tutorial has been shown | `tutorial.js` |
+| `tutorial:seen:<gameId>` | the how-to-play tutorial has been shown (finished or skipped) | `tutorial.js` |
 
 ### The GameResult envelope (official results)
 
@@ -406,7 +409,7 @@ Until norms exist, the UI keeps to neutral language ("Your performance score was
 
 | Command | What it checks |
 |---------|----------------|
-| `npm test` | 78 unit tests (Node built-in runner): scoring baseline for the original games, rng / stats / result envelope / session state machine and eligibility, the migration regression, correctness of every newer game's generator, the eleven-game protocol (`tests/brain-test.test.mjs`), and the Daily Brain Check (`tests/daily.test.mjs`: settings, shortened rounds still scored, day seed, XP and levels) |
+| `npm test` | 89 unit tests (Node built-in runner): scoring baseline for the original games, rng / stats / result envelope / session state machine and eligibility, the migration regression, correctness of every newer game's generator, the eleven-game protocol (`tests/brain-test.test.mjs`), the Daily Brain Check (`tests/daily.test.mjs`: settings, shortened rounds still scored, day seed, XP and levels), and the tutorials and icons (`tests/tutorials.test.mjs`: every game has both, and every practice answer is right) |
 | `npm run validate` | manifest, icons, CSP (no inline scripts or `eval`), every asset path and import, registry → module |
 | `npm run build` | validate, then write `dist/mind-power-games-v<version>.zip` |
 | `tests/browser/harness.html` | dev-only page (not shipped) for mounting any game with an official context from the console |
@@ -458,3 +461,17 @@ Five games, about five minutes, once a day (`js/core/daily.js`, `daily.html`).
 **XP and Brain Level.** XP is stored with each counted check when it finishes, so a later rule change never takes a level away. A counted check earns +100 for finishing, + its score, +25 for each game that beats its previous best, and +50 for a new best score. A first check sets a baseline, so it earns no best bonuses. Level 2 needs 150 XP and each level after needs 50 more (`stepXp(n) = 100 + 50n`): a typical check (150-300 XP) levels up almost daily at first, and every two or three days by level 10.
 
 **Beat-your-best loop.** The instruction card before each game shows that game's best and last daily score ("beat it"). The results screen shows the score change since the last check, the change and a new-best mark per game, the XP breakdown with a level-up animation, and names the lowest ability with a button to practise its game. The popup's top card shows the level and either "Start today's check", "Resume" or "Done today" with the time until the next one.
+
+**Verified in the browser for v1.4.0 (blue palette, icons, try-it tutorials):**
+- every tutorial opens and renders its example and practice with no errors; each practice was played through by an in-page driver, including a wrong answer first - the explanation shown was right every time (e.g. Color Clash: "That is what the word says", Path Finder: "You took 10 steps; the shortest is 8")
+- keys pressed inside a tutorial never reach the game or runner underneath (Enter advances the tutorial, not the Daily Brain Check card)
+- the tutorial opens by itself over the first Daily Brain Check card on a fresh profile; every instruction card and setup screen has How to play
+- popup, profile, Brain Test and Daily Brain Check pages in the blue palette with the new icons, dark and light; the toolbar PNGs at 16-128 px on dark and light backgrounds
+
+---
+
+## 16. Tutorials
+
+Each game's tutorial has three steps: **How it works** (the rule in one sentence and a worked example showing the right answer beside the tempting wrong one), **Try it** (practice questions in the game's own look) and **Ready** (controls and scoring). Practice questions are fixed rather than random, so they can be checked: `tests/tutorials.test.mjs` confirms, for example, that every Color Clash word differs from its ink, every Spatial Rotation mirror really cannot be turned into its shape, and the Path Finder maze's shortest route is the 8 steps the tutorial states.
+
+A wrong practice answer says why and lets the player try again; the step is done when they have answered each question right. The overlay captures the keyboard while it is open, so nothing reaches the game underneath. It opens by itself the first time a game comes up anywhere (practice, Daily Brain Check, Brain Test - always before the game starts, so it never costs test time), and from any How to play button afterwards.

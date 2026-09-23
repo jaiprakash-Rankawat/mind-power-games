@@ -3,6 +3,9 @@
    its own content on top of this, so all eleven stay visually consistent. */
 
 import { el } from './util.js';
+
+/** Confetti in the palette's colours: blue, light blue, amber, white. */
+export const CONFETTI = ['#3b82f6', '#93c5fd', '#fbbf24', '#e2e8f0'];
 import { createFx } from './fx.js';
 
 export function createStage(extraClass = '') {

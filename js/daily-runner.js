@@ -9,6 +9,8 @@
 
 import { getGame } from './core/games.js';
 import { el } from './core/util.js';
+import { iconSvg } from './core/icons.js';
+import { howToPlayButton, showTutorialOnce } from './core/tutorial.js';
 import { wireSoundControl } from './core/sound-control.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { makeResult } from './core/result.js';
@@ -21,8 +23,8 @@ import {
 import { abilityFor, TYPICAL } from './core/profile.js';
 import { meter } from './core/charts.js';
 import { levelBar, animateLevel } from './core/level-ui.js';
-import { resultFx } from './core/arcade.js';
-import { countUp } from './core/fx.js';
+import { resultFx, CONFETTI } from './core/arcade.js';
+import { scoreRing } from './core/score-reveal.js';
 import { sfx } from './core/audio.js';
 
 const stage = document.getElementById('stage');
@@ -120,7 +122,7 @@ function intro(st) {
         const best = st.records[id].best;
         return el('li', {},
           el('span', { class: 'bt-num', text: String(i + 1) }),
-          el('span', { class: 'bt-icon', 'aria-hidden': 'true', text: g.icon }),
+          el('span', { class: 'bt-icon', 'aria-hidden': 'true', html: iconSvg(g.id) }),
           el('span', { class: 'bt-name', text: g.name }),
           el('span', { class: 'bt-cat', text: abilityFor(id).name + (best === null ? '' : ` · best ${best}`) }));
       })
@@ -191,16 +193,18 @@ function instructions(s, st, finishedName = null) {
   show(el('div', { class: 'panel bt-card center' },
     finishedName ? el('span', { class: 'bt-done', text: `✓ ${finishedName} complete` }) : null,
     el('p', { class: 'bt-step', text: `GAME ${s.index + 1} / ${s.order.length}` }),
-    el('div', { class: 'bt-card-icon', 'aria-hidden': 'true', text: g.icon }),
+    el('div', { class: 'bt-card-icon', 'aria-hidden': 'true', html: iconSvg(g.id) }),
     el('h2', { text: g.name }),
     el('span', { class: 'pill', text: abilityFor(gameId).name }),
     el('p', { class: 'bt-rule', text: g.instruction }),
     el('p', { class: 'foot-hint', text: g.keys }),
     el('p', { class: 'dc-target' + (s.counted && best !== null ? ' beat' : ''), text: target }),
     el('div', { class: 'actions' },
+      howToPlayButton(gameId, { className: 'btn tut-open' }),
       el('button', { class: 'btn primary big', type: 'button', onclick: go }, 'Start')),
     el('p', { class: 'foot-hint', text: 'Press Enter to start' })
   ), enterTo(go));
+  showTutorialOnce(gameId);          // first time this game comes up: learn it before the check starts it
 }
 
 async function play(s, st) {
@@ -267,7 +271,7 @@ function deltaChip(a) {
 function abilityRow(a) {
   const g = getGame(a.gameId);
   return el('div', { class: 'bt-row' + (a.isBest ? ' dc-best' : '') },
-    el('span', { class: 'bt-icon', 'aria-hidden': 'true', text: a.icon }),
+    el('span', { class: 'bt-icon', 'aria-hidden': 'true', html: iconSvg(a.gameId) }),
     el('span', { class: 'bt-row-main' },
       el('span', { class: 'bt-row-head' },
         el('b', { text: a.name }),
@@ -290,7 +294,8 @@ function nextStep(s) {
     el('p', { class: 'dc-next-kicker', text: 'Your next step' }),
     el('p', { class: 'dc-next-text', text: `${weakest.name} was your lowest today (${weakest.score}). Practice rounds of ${g.name} are where you have the most to gain.` }),
     el('div', { class: 'actions' },
-      el('button', { class: 'btn', type: 'button', onclick: () => practise(g.id) }, `${g.icon}  Practise ${g.name}`)),
+      el('button', { class: 'btn dc-practise', type: 'button', onclick: () => practise(g.id) },
+        el('span', { class: 'bt-icon', 'aria-hidden': 'true', html: iconSvg(g.id) }), `Practise ${g.name}`)),
     s.counted && s.summary.score !== null
       ? el('p', { class: 'foot-hint', text: `Next check unlocks in ${untilNextCheck()}. Tomorrow's target: beat ${s.summary.score}.` })
       : null
@@ -301,7 +306,7 @@ function results(s, st, { before = null } = {}) {
   paintProgress(s);
   const sum = s.summary;
   const day = new Date(s.completedAt || s.updatedAt).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-  const scoreEl = el('span', { class: 'bt-overall-num', text: sum.score === null ? '—' : before ? '0' : String(sum.score) });
+  const ring = scoreRing(sum.score, { typical: TYPICAL });
 
   const bar = levelBar(before || st.level);
   const levelUp = el('span', { class: 'dc-levelup', 'aria-live': 'polite' });
@@ -318,7 +323,7 @@ function results(s, st, { before = null } = {}) {
   const done = once(() => home());
   const panel = el('div', { class: 'panel result-panel bt-profile dc-results' },
     el('p', { class: 'result-sub', text: (s.counted ? 'Daily Brain Check · ' : 'Practice run · ') + day }),
-    el('div', { class: 'bt-overall' }, scoreEl, el('span', { class: 'bt-overall-of', text: '/ 100' })),
+    ring.node,
     scoreLine(sum, s.counted),
     sum.isBestScore ? el('div', { class: 'center' }, el('span', { class: 'badge', text: 'NEW BEST SCORE' })) : null,
     levelBox,
@@ -334,8 +339,8 @@ function results(s, st, { before = null } = {}) {
   show(panel, enterTo(done), () => fx.stop());
 
   if (!before) return;                         // viewing a finished check: no replay
-  const colors = ['#a789ff', '#37dcf2', '#34d399', '#fbbf24'];
-  if (sum.score !== null) countUp(scoreEl, sum.score, 900);
+  const colors = CONFETTI;
+  ring.play({ delay: 250, ms: 1300 });
   sfx.finish();
   if (sum.isBestScore || sum.abilities.some((a) => a.isBest)) fx.start(colors);
   animateLevel(bar, before, st.level, (level) => {

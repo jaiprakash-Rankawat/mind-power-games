@@ -48,7 +48,6 @@ export const ABILITIES = [
     name: 'Attention',
     game: 'stroop',
     gameName: 'Color Clash',
-    icon: '\u{1F3A8}',
     what: 'Acting on what matters while ignoring a strong distraction',
     /* Inverse efficiency (reaction time / accuracy) folds speed and accuracy into
        one number; harder modes are credited for their extra load. */
@@ -69,7 +68,6 @@ export const ABILITIES = [
     name: 'Visual Memory',
     game: 'memory-grid',
     gameName: 'Memory Grid',
-    icon: '\u{1F9E9}',
     what: 'Holding a sequence of places in mind and replaying it',
     /* Corsi-style span: published adult results cluster around 5-6. Bigger grids credit more. */
     score(run) {
@@ -85,7 +83,6 @@ export const ABILITIES = [
     name: 'Working Memory',
     game: 'n-back',
     gameName: 'N-Back',
-    icon: '\u{1F501}',
     what: 'Updating what you hold in mind as new information arrives',
     /* Level held, nudged by sensitivity (d') so clean play outranks lucky play.
        Published adult results mostly fall between 2- and 3-back. */
@@ -106,7 +103,6 @@ export const ABILITIES = [
     name: 'Processing Speed',
     game: 'reaction',
     gameName: 'Reaction Speed',
-    icon: '⚡',
     what: 'Seeing, deciding and responding quickly',
     /* Median reaction times as measured in a browser (which adds some device
        latency). With a choice part, the decision speed dominates: choice time /
@@ -134,7 +130,6 @@ export const ABILITIES = [
     name: 'Flexibility',
     game: 'task-switch',
     gameName: 'Task Switch',
-    icon: '\u{1F504}',
     what: 'Changing mental gears when the rules change',
     /* Switch cost (median correct RT after a rule change minus on a repeat), with
        published results for cued switching mostly between 100 and 300ms. Predictable
@@ -156,7 +151,6 @@ export const ABILITIES = [
     name: 'Reasoning',
     game: 'number-pattern',
     gameName: 'Number Pattern',
-    icon: '\u{1F522}',
     what: 'Finding the rule behind a pattern and applying it',
     /* The adaptive difficulty settles where the player gets about 70% right, so the
        level held in the second half is the estimate. Levels are absolute (the same
@@ -175,7 +169,6 @@ export const ABILITIES = [
     name: 'Spatial Reasoning',
     game: 'spatial-rotation',
     gameName: 'Spatial Rotation',
-    icon: '\u{1F9CA}',
     what: 'Turning shapes in your mind to compare them',
     /* Median correct RT / accuracy. Published 2D mental-rotation times for turns up
        to 180 degrees mostly run 1-3s. With two choices, 50% is chance, so accuracy
@@ -195,7 +188,6 @@ export const ABILITIES = [
     name: 'Sequence Memory',
     game: 'sequence-recall',
     gameName: 'Sequence Recall',
-    icon: '\u{1F9EE}',
     what: 'Holding items in mind in order and playing them back',
     /* Digit span. Published adult forward spans mostly fall around 6-7 and backward
        spans about two digits shorter, so a backward span earns +2 and the slower
@@ -213,7 +205,6 @@ export const ABILITIES = [
     name: 'Visual Tracking',
     game: 'visual-tracking',
     gameName: 'Visual Tracking',
-    icon: '\u{1F440}',
     what: 'Following one moving object among identical ones',
     /* The staircase settles on the speed the player can follow at about 70% right,
        so the speed held in the second half is the estimate. More look-alikes make
@@ -235,7 +226,6 @@ export const ABILITIES = [
     name: 'Sustained Attention',
     game: 'attention-storm',
     gameName: 'Attention Storm',
-    icon: '\u{1F32A}️',
     what: 'Catching every target in a long, fast stream without reacting to look-alikes',
     /* Sensitivity (d-prime) drives the score: stars caught against false alarms, so
        pressing at everything and pressing at nothing both score low. Faster paces
@@ -257,7 +247,6 @@ export const ABILITIES = [
     name: 'Planning',
     game: 'path-finder',
     gameName: 'Path Finder',
-    icon: '\u{1F9ED}',
     what: 'Working out the best route before committing to it',
     /* Only a perfect route moves the player up, so the level held in the second
        half is the main estimate. Route efficiency (best cost / cost walked) nudges
@@ -408,7 +397,7 @@ export async function buildMindProfile() {
     const s = abilityScore(a, runs);
     const last = runs.length ? runs[runs.length - 1] : null;
     return {
-      id: a.id, name: a.name, game: a.game, gameName: a.gameName, icon: a.icon, what: a.what,
+      id: a.id, name: a.name, game: a.game, gameName: a.gameName, what: a.what,
       ...s,
       lastMetric: last ? a.metric(last) : null
     };
