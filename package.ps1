@@ -46,7 +46,18 @@ $distDir = Join-Path $root 'dist'
 if (-not (Test-Path $distDir)) { New-Item -ItemType Directory -Path $distDir | Out-Null }
 $zip = Join-Path $distDir ("mind-power-games-v$version.zip")
 if (Test-Path $zip) { Remove-Item $zip -Force }
-Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zip
+# Not Compress-Archive: in Windows PowerShell 5.1 it stores paths with backslashes
+# (css\game.css), which the ZIP format and the Chrome Web Store expect as forward slashes.
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+$archive = [System.IO.Compression.ZipFile]::Open($zip, 'Create')
+try {
+  Get-ChildItem $stage -Recurse -File | ForEach-Object {
+    $entry = $_.FullName.Substring($stage.Length + 1).Replace('\', '/')
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive, $_.FullName, $entry, 'Optimal') | Out-Null
+  }
+} finally {
+  $archive.Dispose()
+}
 Remove-Item $stage -Recurse -Force
 
 # A signpost, because "dist" is the folder people accidentally pick in Chrome.

@@ -255,7 +255,8 @@ body.game-page{min-height:100vh;display:flex;justify-content:center;padding:22px
 .combo-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),#f43f5e);transition:width .25s ease}
 .combo-label{font-size:10px;letter-spacing:1.1px;color:var(--muted);text-transform:uppercase;white-space:nowrap}
 
-.hud .box.bump{animation:bump .4s cubic-bezier(.34,1.6,.64,1)}
+/* opacity:1 because this animation replaces the fade-in that makes HUD boxes visible */
+.hud .box.bump{opacity:1;animation:bump .4s cubic-bezier(.34,1.6,.64,1)}
 @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.09)}100%{transform:scale(1)}}
 
 /* streak callout */
