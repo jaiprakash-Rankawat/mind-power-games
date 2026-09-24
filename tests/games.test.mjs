@@ -250,3 +250,422 @@ test('spatial: summary - median RT by angle and the per-degree slope', () => {
   assert.ok(m.rtSlope > 5 && m.rtSlope < 8, 'about 6.5 ms per degree');
   assert.equal(m.timeouts, 1);
 });
+
+/* ----------------------------------------------------- sequence recall */
+
+import * as SQ from '../js/games/logic/sequence-recall-logic.js';
+import { abilityFor } from '../js/core/profile.js';
+
+test('sequence recall: sequences are reproducible, the right length, and free of shortcuts', () => {
+  assert.deepEqual(SQ.makeSequence(createRng(7), 8), SQ.makeSequence(createRng(7), 8));
+  for (let seed = 1; seed <= 400; seed++) {
+    const rng = createRng(seed);
+    for (let len = 2; len <= 12; len++) {
+      const s = SQ.makeSequence(rng, len);
+      assert.equal(s.length, len);
+      for (let i = 0; i < s.length; i++) {
+        assert.ok(SQ.DIGITS.includes(s[i]), 'digits 1-9 only');
+        if (i >= 1) assert.notEqual(s[i], s[i - 1], 'no digit twice in a row');
+        if (i >= 2) {
+          const up = s[i - 1] - s[i - 2] === 1 && s[i] - s[i - 1] === 1;
+          const down = s[i - 2] - s[i - 1] === 1 && s[i - 1] - s[i] === 1;
+          assert.ok(!up && !down, `no run of three in ${s}`);
+        }
+      }
+    }
+  }
+});
+
+test('sequence recall: forward and reverse answers, exact-order checking', () => {
+  const seq = [7, 2, 9, 4];
+  assert.deepEqual(SQ.expectedAnswer(seq, false), [7, 2, 9, 4]);
+  assert.deepEqual(SQ.expectedAnswer(seq, true), [4, 9, 2, 7]);
+  assert.deepEqual(seq, [7, 2, 9, 4], 'the shown sequence is not mutated');
+  assert.equal(SQ.isCorrect([7, 2, 9, 4], [7, 2, 9, 4]), true);
+  assert.equal(SQ.isCorrect([7, 9, 2, 4], [7, 2, 9, 4]), false, 'same digits, wrong order');
+  assert.equal(SQ.isCorrect([7, 2, 9], [7, 2, 9, 4]), false, 'incomplete');
+  assert.equal(SQ.positionsRight([7, 9, 2, 4], [7, 2, 9, 4]), 2);
+});
+
+test('sequence recall: presentation times come from one start, so they never drift', () => {
+  const plan = SQ.schedule(10, { on: 750, off: 250 });
+  plan.items.forEach((it, i) => {
+    assert.equal(it.show, i * 1000);
+    assert.equal(it.hide - it.show, 750);
+  });
+  assert.equal(plan.end, 10000);
+});
+
+test('sequence recall: staircase - longer after a hit, two misses in a row end the round', () => {
+  const cfg = { maxLength: 12 };
+  let s = { length: 3, misses: 0 };
+  s = SQ.step(s, true, cfg);
+  assert.deepEqual(s, { length: 4, misses: 0, done: false });
+  s = SQ.step(s, false, cfg);
+  assert.deepEqual(s, { length: 4, misses: 1, done: false }, 'a miss retries the same length');
+  s = SQ.step(s, true, cfg);
+  assert.deepEqual(s, { length: 5, misses: 0, done: false }, 'a hit clears the miss');
+  s = SQ.step(SQ.step(s, false, cfg), false, cfg);
+  assert.equal(s.done, true);
+  assert.equal(SQ.step({ length: 12, misses: 0 }, true, cfg).done, true, 'passing the cap ends the round');
+});
+
+test('sequence recall: a round always ends - worst case is bounded', () => {
+  // alternate miss / hit forever: the length still climbs, so the cap is reached
+  let s = { length: 3, misses: 0 };
+  let trials = 0;
+  for (let hit = false; !s.done; hit = !hit) { s = SQ.step(s, hit, { maxLength: 12 }); trials += 1; }
+  assert.ok(trials <= 2 * (12 - 3 + 1) + 1, `ended after ${trials} trials`);
+});
+
+test('sequence recall: summary - span, accuracy and times from correct trials', () => {
+  const t = (length, correct, right, rt, firstRt = 500) => ({ length, correct, right, rt, firstRt });
+  const m = SQ.summarize([
+    t(3, true, 3, 2000), t(4, true, 4, 3000), t(5, false, 3, 4000), t(5, true, 5, 4500), t(6, false, 2, 5200), t(6, false, 4, null)
+  ]);
+  assert.equal(m.span, 5);
+  assert.equal(m.levelReached, 6);
+  assert.equal(m.correct, 3);
+  assert.equal(m.wrong, 3);
+  assert.equal(m.total, 6);
+  assert.equal(m.accuracy, 50);
+  assert.equal(m.itemAccuracy, Math.round((21 / 29) * 100));
+  assert.equal(m.medianRt, 3000);
+  assert.equal(SQ.summarize([t(3, false, 1, 2000), t(3, false, 0, 1800)]).span, 0);
+});
+
+test('sequence recall: ability score - longer spans score higher, backwards is credited', () => {
+  const a = abilityFor('sequence-recall');
+  assert.equal(a.score({ mode: 'medium', total: 1, span: 4 }), null, 'one trial is not a measurement');
+  const at = (span, mode = 'medium', reverse = false) => a.score({ mode, span, reverse, total: 8 });
+  for (let s = 1; s < 12; s++) assert.ok(at(s + 1) >= at(s), 'monotonic in span');
+  assert.equal(at(6.5), 50);
+  assert.ok(at(5, 'hard', true) > at(5), 'a backward span of 5 beats a forward span of 5');
+  assert.ok(at(6, 'easy') < at(6), 'the slower Easy pace earns a little less');
+});
+
+/* ----------------------------------------------------- visual tracking */
+
+import * as VT from '../js/games/logic/visual-tracking-logic.js';
+
+const VT_MODES = {
+  easy: { n: 3, duration: 4000, wander: 0.7, turns: 0 },
+  medium: { n: 5, duration: 5000, wander: 1.1, turns: 0.25 },
+  hard: { n: 8, duration: 5000, wander: 1.4, turns: 0.5 },
+  crowded: { n: 10, duration: 5000, wander: 1.4, turns: 0.5 }
+};
+
+test('visual tracking: motion is reproducible from its seed', () => {
+  const p = { ...VT_MODES.hard, speed: 320 };
+  assert.deepEqual(VT.simulate(4242, p).frames, VT.simulate(4242, p).frames);
+  assert.notDeepEqual(VT.simulate(4242, p).frames, VT.simulate(4243, p).frames);
+});
+
+test('visual tracking: objects stay in bounds, never overlap, keep moving, never park', () => {
+  const { w, h, r } = VT.ARENA;
+  for (const [name, m] of Object.entries(VT_MODES)) {
+    for (const speed of VT.SPEEDS) {
+      for (let seed = 1; seed <= 12; seed++) {
+        const s = VT.simulate(seed * 7919 + speed, { ...m, speed });
+        let slow = 0;
+        let outside = 0;
+        let closest = Infinity;
+        for (let i = 0; i < s.n; i++) {
+          const xs = [];
+          const ys = [];
+          for (let f = 0; f <= s.steps; f++) {
+            const p = VT.positionAt(s, f, i);
+            xs.push(p.x); ys.push(p.y);
+            if (p.x < r - 1e-3 || p.x > w - r + 1e-3 || p.y < r - 1e-3 || p.y > h - r + 1e-3) outside += 1;
+            for (let j = i + 1; j < s.n; j++) {
+              const q = VT.positionAt(s, f, j);
+              closest = Math.min(closest, Math.hypot(p.x - q.x, p.y - q.y));
+            }
+            if (f && Math.hypot(xs[f] - xs[f - 1], ys[f] - ys[f - 1]) / VT.DT < 0.5 * speed) slow += 1;
+          }
+          // never parked: it always leaves any small circle within 4s of a 5s trial
+          for (let f = 0; f <= s.steps; f += 5) {
+            let g = f;
+            while (g <= s.steps && Math.hypot(xs[g] - xs[f], ys[g] - ys[f]) < 2 * r) g += 1;
+            assert.ok((g - f) * VT.DT < 4, `${name} speed ${speed}: object ${i} lingered ${((g - f) * VT.DT).toFixed(1)}s`);
+          }
+        }
+        assert.equal(outside, 0, `${name}: in bounds`);
+        assert.ok(closest >= 2 * r + 4, `${name}: objects never touch (closest ${closest.toFixed(1)})`);
+        assert.ok(slow / (s.n * s.steps) < 0.005, `${name}: speed held constant (${slow} slow frames)`);
+      }
+    }
+  }
+});
+
+test('visual tracking: start positions are spread out, answer numbers cover every object once', () => {
+  for (let seed = 1; seed <= 200; seed++) {
+    const pts = VT.startPositions(createRng(seed), 10);
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      assert.ok(Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y) >= 3.4 * VT.ARENA.r);
+    }
+  }
+  const s = VT.simulate(99, { ...VT_MODES.hard, speed: 270 });
+  const order = VT.labelOrder(s);
+  assert.deepEqual([...order].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5, 6, 7]);
+  const xs = order.map((i) => VT.positionAt(s, s.steps, i).x);
+  assert.deepEqual(xs, [...xs].sort((a, b) => a - b), 'numbered left to right');
+});
+
+test('visual tracking: staircase - two right to speed up, one wrong to slow down', () => {
+  assert.deepEqual(VT.nextLevel(3, 0, true), { level: 3, streak: 1 });
+  assert.deepEqual(VT.nextLevel(3, 1, true), { level: 4, streak: 0 });
+  assert.deepEqual(VT.nextLevel(3, 1, false), { level: 2, streak: 0 });
+  assert.deepEqual(VT.nextLevel(1, 0, false), { level: 1, streak: 0 });
+  assert.deepEqual(VT.nextLevel(VT.LEVELS, 1, true), { level: VT.LEVELS, streak: 0 });
+  assert.equal(VT.speedFor(1), VT.SPEEDS[0]);
+  assert.equal(VT.speedFor(99), VT.SPEEDS[VT.LEVELS - 1]);
+});
+
+test('visual tracking: summary - speed held from the settled second half', () => {
+  const t = (level, correct, rt) => ({ level, speed: VT.speedFor(level), correct, rt });
+  const m = VT.summarize([t(2, true, 900), t(2, true, 800), t(3, false, 1500), t(2, true, 700), t(2, true, 1000), t(3, true, 1200)]);
+  assert.equal(m.correct, 5);
+  assert.equal(m.accuracy, 83);
+  assert.equal(m.levelReached, 3);
+  assert.equal(m.levelEstimate, 2.3);                          // levels 2, 2, 3
+  assert.equal(m.speedHeld, Math.round((VT.speedFor(2) * 2 + VT.speedFor(3)) / 3));
+  assert.equal(m.medianRt, 900);
+});
+
+test('visual tracking: ability score - faster held speed and more look-alikes score higher', () => {
+  const a = abilityFor('visual-tracking');
+  assert.equal(a.score({ speedHeld: 300, objects: 5, accuracy: 80, total: 3 }), null, 'too few rounds');
+  const at = (speedHeld, objects = 5, accuracy = 75) => a.score({ speedHeld, objects, accuracy, total: 10 });
+  assert.ok(at(380) > at(270));
+  assert.ok(at(300, 8) > at(300, 3), 'the same speed among 8 objects beats among 3');
+  assert.ok(at(530, 5, 30) <= 30, 'near-chance accuracy is capped');
+});
+
+/* ----------------------------------------------------- attention storm */
+
+import * as AS from '../js/games/logic/attention-storm-logic.js';
+
+const AS_CFG = {
+  size: 32, targets: 8, lures: 6,
+  lureShapes: ['star5-outline', 'star5-inverted', 'star6'],
+  otherShapes: ['circle', 'triangle', 'square', 'diamond', 'hexagon', 'plus']
+};
+
+test('attention storm: blocks have exact counts and no shortcuts', () => {
+  assert.deepEqual(AS.makeBlock(createRng(3), AS_CFG), AS.makeBlock(createRng(3), AS_CFG));
+  for (let seed = 1; seed <= 500; seed++) {
+    const b = AS.makeBlock(createRng(seed), AS_CFG);
+    assert.equal(b.length, 32);
+    assert.equal(b.filter((s) => s.kind === 'target').length, 8);
+    assert.equal(b.filter((s) => s.kind === 'lure').length, 6);
+    assert.ok(b.every((s) => (s.kind === 'target') === (s.shape === AS.TARGET)), 'only targets are the target star');
+    assert.ok(b.filter((s) => s.kind === 'lure').every((s) => AS_CFG.lureShapes.includes(s.shape)));
+    assert.ok(AS.isWellFormed(b));
+    assert.notEqual(b[0].kind, 'target', 'never a target first');
+    for (let i = 2; i < b.length; i++) {
+      assert.ok(!(b[i].kind === 'target' && b[i - 1].kind === 'target' && b[i - 2].kind === 'target'), 'at most two targets in a row');
+    }
+  }
+});
+
+test('attention storm: every shape draws, and each look-alike differs from the target', () => {
+  for (const s of AS.SHAPES) assert.match(AS.shapeMarkup(s), /^<svg viewBox="0 0 100 100"[^>]*>.+<\/svg>$/);
+  const target = AS.shapeMarkup(AS.TARGET);
+  for (const s of AS.SHAPES.filter((x) => x !== AS.TARGET)) assert.notEqual(AS.shapeMarkup(s), target);
+});
+
+test('attention storm: timings stay humanly possible', () => {
+  for (const { on, off } of AS.LEVELS) {
+    assert.ok(on >= 400, 'every shape is shown for at least 400 ms');
+    assert.ok(on + off >= 700, 'every response window is at least 700 ms');
+  }
+  assert.deepEqual(AS.timingFor(0), AS.LEVELS[0]);
+  assert.deepEqual(AS.timingFor(99), AS.LEVELS[AS.MAX_LEVEL - 1]);
+});
+
+test('attention storm: a response belongs to the shape it was aimed at', () => {
+  const onsets = [1000, 1700, 2400];
+  assert.equal(AS.windowFor(onsets, 1050), -1, 'too early to be a reaction to the first shape');
+  assert.equal(AS.windowFor(onsets, 1100), 0);
+  assert.equal(AS.windowFor(onsets, 1750), 0, 'a slow response just after the next onset still counts for the first');
+  assert.equal(AS.windowFor(onsets, 1800), 1);
+  assert.equal(AS.windowFor(onsets, 2600), 2);
+});
+
+test('attention storm: d-prime - perfect is high, guessing is near zero, and it stays finite', () => {
+  assert.equal(AS.probit(0.5), 0);
+  assert.ok(Math.abs(AS.probit(0.975) - 1.959964) < 1e-6);
+  assert.ok(Math.abs(AS.probit(0.01) + 2.326348) < 1e-6);
+  const perfect = AS.dPrime(24, 24, 0, 72);
+  assert.ok(perfect > 3.5 && Number.isFinite(perfect));
+  assert.ok(Math.abs(AS.dPrime(12, 24, 36, 72)) < 0.1, 'pressing at random');
+  assert.ok(AS.dPrime(24, 24, 72, 72) < 0.1, 'pressing at everything is not sensitivity');
+  assert.equal(AS.dPrime(0, 0, 3, 72), null);
+});
+
+test('attention storm: pace between blocks - faster when clean, slower when struggling', () => {
+  assert.equal(AS.nextLevel(3, { hitRate: 0.9, faRate: 0.05 }), 4);
+  assert.equal(AS.nextLevel(3, { hitRate: 0.75, faRate: 0.15 }), 3);
+  assert.equal(AS.nextLevel(3, { hitRate: 0.5, faRate: 0.05 }), 2);
+  assert.equal(AS.nextLevel(3, { hitRate: 0.95, faRate: 0.4 }), 2, 'pressing at everything slows it down');
+  assert.equal(AS.nextLevel(AS.MAX_LEVEL, { hitRate: 1, faRate: 0 }), AS.MAX_LEVEL);
+  assert.equal(AS.nextLevel(1, { hitRate: 0, faRate: 1 }), 1);
+});
+
+test('attention storm: summary counts hits, misses and both kinds of false alarm; voided shapes are left out', () => {
+  const st = (kind, responded, rt = null, block = 1, level = 3, voided = false) => ({ kind, responded, rt, block, level, voided });
+  const m = AS.summarize([
+    st('target', true, 400), st('target', true, 500), st('target', false), st('lure', true, 380), st('other', true, 300),
+    st('other', false), st('other', false), st('lure', false, null, 2, 4), st('target', true, 450, 2, 4), st('target', false, null, 2, 4, true)
+  ]);
+  assert.equal(m.hits, 3);
+  assert.equal(m.misses, 1);
+  assert.equal(m.lureFalseAlarms, 1);
+  assert.equal(m.otherFalseAlarms, 1);
+  assert.equal(m.falseAlarms, 2);
+  assert.equal(m.correctRejections, 3);
+  assert.equal(m.total, 9, 'the voided shape is not scored');
+  assert.equal(m.accuracy, Math.round((6 / 9) * 100));
+  assert.equal(m.hitRate, 75);
+  assert.equal(m.medianRt, 450);
+  assert.equal(m.levelReached, 4);
+  assert.equal(m.levelEstimate, 4, 'estimated from the blocks after the first');
+  assert.equal(m.voided, 1);
+});
+
+test('attention storm: ability score comes from sensitivity - speed cannot rescue false alarms or misses', () => {
+  const a = abilityFor('attention-storm');
+  const run = (dprime, medianRt, hits = 22, misses = 2) => a.score({ dprime, medianRt, hits, misses, total: 96, levelEstimate: 3 });
+  assert.equal(a.score({ dprime: 3, total: 20, hits: 5, misses: 0 }), null, 'too short to measure');
+  assert.ok(run(4, 450) > run(2, 450), 'better sensitivity scores higher');
+  assert.ok(run(2, 250) < run(3, 600), 'a very fast player with more errors scores below a slower careful one');
+  assert.ok(run(0.6, 200) <= 20, 'near-guessing is capped however fast it is');
+  assert.ok(Math.abs(run(3, 300) - run(3, 700)) <= 10, 'reaction time moves the score by at most 5 either way');
+});
+
+/* --------------------------------------------------------- path finder */
+
+import * as PF from '../js/games/logic/path-finder-logic.js';
+
+/* An independent check that shares no code with the generator: plain
+   Bellman-Ford relaxation over the grid, slow but obviously correct. */
+function bruteCheapest(rows, start, goal) {
+  const n = rows.length;
+  const cost = (r, c) => (rows[r][c] === '~' ? 2 : 1);
+  const dist = rows.map((row) => [...row].map(() => Infinity));
+  dist[start[0]][start[1]] = 0;
+  for (let changed = true; changed;) {
+    changed = false;
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      if (rows[r][c] === '#' || dist[r][c] === Infinity) continue;
+      for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const a = r + dr;
+        const b = c + dc;
+        if (a < 0 || b < 0 || a >= n || b >= n || rows[a][b] === '#') continue;
+        if (dist[r][c] + cost(a, b) < dist[a][b]) { dist[a][b] = dist[r][c] + cost(a, b); changed = true; }
+      }
+    }
+  }
+  return dist[goal[0]][goal[1]];
+}
+
+test('path finder: every generated puzzle is solvable, with valid endpoints and a correct best cost', () => {
+  for (const weighted of [false, true]) {
+    for (let level = 1; level <= PF.MAX_LEVEL; level++) {
+      const spec = PF.LEVELS[level - 1];
+      for (let seed = 1; seed <= 250; seed++) {
+        const p = PF.generatePuzzle(createRng(seed * 131 + level), level, weighted);
+        const n = p.size;
+        assert.equal(n, spec.size);
+        assert.equal(p.grid.length, n);
+        assert.ok(p.grid.every((row) => row.length === n && /^[.#~]+$/.test(row)));
+        assert.equal(p.start[1], 0, 'start on the left edge');
+        assert.equal(p.goal[1], n - 1, 'goal on the right edge');
+        assert.notEqual(p.grid[p.start[0]][p.start[1]], '#');
+        assert.notEqual(p.grid[p.goal[0]][p.goal[1]], '#');
+        const truth = bruteCheapest(p.grid, p.start, p.goal);
+        assert.ok(Number.isFinite(truth), `L${level} seed ${seed}: solvable`);
+        assert.equal(p.optimalCost, truth, 'the best cost the game scores against is the true best');
+        assert.equal(PF.walkCost(p.grid, p.bestPath), p.optimalCost, 'the outlined best route really costs that');
+        for (let i = 1; i < p.bestPath.length; i++) {
+          assert.ok(PF.isAdjacent(p.bestPath[i - 1], p.bestPath[i]) && p.grid[p.bestPath[i][0]][p.bestPath[i][1]] !== '#');
+        }
+        assert.ok(p.optimalSteps >= spec.minSteps, 'long enough to need planning');
+        if (!weighted) assert.ok(!p.grid.join('').includes('~'), 'no mud outside Hard');
+      }
+    }
+  }
+});
+
+test('path finder: harder levels offer a second route; Hard puzzles usually hide a trap', () => {
+  let traps = 0;
+  let total = 0;
+  for (let level = 3; level <= PF.MAX_LEVEL; level++) {
+    for (let seed = 1; seed <= 100; seed++) {
+      for (const weighted of [false, true]) {
+        const p = PF.generatePuzzle(createRng(seed * 7 + level), level, weighted);
+        const rows = p.grid.map((r) => r.split(''));
+        const best = PF.cheapestRoute(rows, p.start, p.goal);
+        assert.ok(PF.hasAlternative(rows, p.start, p.goal, best), `L${level}: a second route exists`);
+        if (weighted) { total += 1; if (p.trap) traps += 1; }
+      }
+    }
+  }
+  assert.ok(traps / total >= 0.9, `the fewest-steps route costs more than the best one in ${traps}/${total}`);
+});
+
+test('path finder: the carved fallback is solvable even on a crowded grid', () => {
+  for (let seed = 1; seed <= 500; seed++) {
+    const p = PF.carvedPuzzle(createRng(seed), 6, seed % 2 === 0, { size: 10, walls: 0.7 });
+    assert.ok(Number.isFinite(bruteCheapest(p.grid, p.start, p.goal)));
+    assert.equal(p.how, 'carved');
+  }
+});
+
+test('path finder: puzzles are reproducible and quick to generate', () => {
+  assert.deepEqual(PF.generatePuzzle(createRng(5), 5, true), PF.generatePuzzle(createRng(5), 5, true));
+  const t0 = performance.now();
+  for (let seed = 1; seed <= 100; seed++) PF.generatePuzzle(createRng(seed), PF.MAX_LEVEL, true);
+  const avg = (performance.now() - t0) / 100;
+  assert.ok(avg < 25, `hardest puzzles average ${avg.toFixed(1)} ms to generate`);
+});
+
+test('path finder: walked cost, staircase and points', () => {
+  const rows = ['.~.', '...', '...'];
+  assert.equal(PF.walkCost(rows, [[0, 0], [0, 1], [0, 2]]), 3, 'mud costs 2');
+  assert.equal(PF.walkCost(rows, [[0, 0], [1, 0], [1, 1], [1, 2], [0, 2]]), 4);
+  assert.equal(PF.nextLevel(3, { solved: true, optimal: true }), 4);
+  assert.equal(PF.nextLevel(3, { solved: true, optimal: false }), 3);
+  assert.equal(PF.nextLevel(3, { solved: false, optimal: false }), 2);
+  assert.equal(PF.nextLevel(PF.MAX_LEVEL, { solved: true, optimal: true }), PF.MAX_LEVEL);
+  assert.equal(PF.nextLevel(1, { solved: false, optimal: false }), 1);
+  const base = { level: 3, optimalCost: 10, timeMs: 20000, limitMs: 30000 };
+  assert.ok(PF.pointsFor({ ...base, solved: true, optimal: true, cost: 10 }) > PF.pointsFor({ ...base, solved: true, optimal: false, cost: 12 }));
+  assert.equal(PF.pointsFor({ ...base, solved: false, optimal: false, cost: 4 }), 0);
+});
+
+test('path finder: summary - completion, best routes, efficiency and level held', () => {
+  const p = (level, solved, cost, optimalCost, moves = cost) => ({ level, weighted: false, solved, optimal: solved && cost === optimalCost, cost, optimalCost, moves, optimalSteps: optimalCost, timeMs: 9000, planningMs: 2000 });
+  const m = PF.summarize([p(2, true, 8, 8), p(3, true, 10, 10), p(4, true, 14, 12), p(4, false, 5, 13), p(3, true, 11, 11), p(4, true, 13, 13)]);
+  assert.equal(m.completed, 5);
+  assert.equal(m.correct, 4);
+  assert.equal(m.total, 6);
+  assert.equal(m.accuracy, 67);
+  assert.equal(m.completionRate, 83);
+  assert.equal(m.efficiency, Math.round(((1 + 1 + 12 / 14 + 1 + 1) / 5) * 100));
+  assert.equal(m.excessMean, 0.4);
+  assert.equal(m.levelReached, 4);
+  assert.equal(m.levelEstimate, 3.7);                          // levels 4, 3, 4
+  assert.equal(m.hintsUsed, 0);
+});
+
+test('path finder: ability score - higher levels and better routes score higher', () => {
+  const a = abilityFor('path-finder');
+  assert.equal(a.score({ levelEstimate: 3, efficiency: 100, completionRate: 100, total: 3 }), null, 'too few puzzles');
+  const at = (levelEstimate, efficiency = 95, completionRate = 100, weighted = false) => a.score({ levelEstimate, efficiency, completionRate, weighted, total: 8 });
+  assert.ok(at(4) > at(3));
+  assert.ok(at(4, 100) > at(4, 75), 'efficient routes beat wasteful ones at the same level');
+  assert.ok(at(4, 95, 100, true) > at(4), 'weighted puzzles earn credit');
+  assert.ok(at(5, 95, 25) <= 25, 'mostly unsolved rounds are capped');
+});

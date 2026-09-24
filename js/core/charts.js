@@ -90,7 +90,9 @@ export function radarChart({ axes, size = 300, typical = [40, 60], emptyLabel = 
     const [lx, ly] = pt(i, 100 + 1800 / R);
     const cos = Math.cos(angle(i));
     const sin = Math.sin(angle(i));
-    const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle';
+    // 0.15, not wider: with 11 axes the two bottom spokes sit at |cos| 0.28 and
+    // their centred labels would run into each other
+    const anchor = cos > 0.15 ? 'start' : cos < -0.15 ? 'end' : 'middle';
     const dy = sin < -0.3 ? -8 : sin > 0.3 ? 12 : 2;
     svg.append(svgText(lx.toFixed(1), (ly + dy).toFixed(1), a.label, { class: 'viz-axis-label', 'text-anchor': anchor }));
     svg.append(svgText(lx.toFixed(1), (ly + dy + 16).toFixed(1),

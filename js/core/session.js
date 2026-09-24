@@ -16,7 +16,10 @@ import { randomSeed, hashSeed } from './rng.js';
 import { SCORING_VERSION } from './result.js';
 import { track } from './analytics.js';
 
-export const PROTOCOL_VERSION = 1;
+/* 1: the seven original games. 2: eleven games (Sequence Recall, Visual Tracking,
+   Attention Storm and Path Finder added). A session keeps the order it started
+   with, so sessions from different protocols are never compared. */
+export const PROTOCOL_VERSION = 2;
 
 const CURRENT_KEY = 'session:current';
 const LIST_KEY = 'sessions:list';
@@ -100,7 +103,6 @@ export function summarize(s) {
       gameId,
       id: a ? a.id : gameId,
       name: a ? a.name : gameId,
-      icon: a ? a.icon : '',
       score: r && typeof r.score === 'number' ? r.score : null
     };
   });

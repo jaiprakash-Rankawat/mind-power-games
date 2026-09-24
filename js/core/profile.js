@@ -48,7 +48,6 @@ export const ABILITIES = [
     name: 'Attention',
     game: 'stroop',
     gameName: 'Color Clash',
-    icon: '\u{1F3A8}',
     what: 'Acting on what matters while ignoring a strong distraction',
     /* Inverse efficiency (reaction time / accuracy) folds speed and accuracy into
        one number; harder modes are credited for their extra load. */
@@ -69,7 +68,6 @@ export const ABILITIES = [
     name: 'Visual Memory',
     game: 'memory-grid',
     gameName: 'Memory Grid',
-    icon: '\u{1F9E9}',
     what: 'Holding a sequence of places in mind and replaying it',
     /* Corsi-style span: published adult results cluster around 5-6. Bigger grids credit more. */
     score(run) {
@@ -85,7 +83,6 @@ export const ABILITIES = [
     name: 'Working Memory',
     game: 'n-back',
     gameName: 'N-Back',
-    icon: '\u{1F501}',
     what: 'Updating what you hold in mind as new information arrives',
     /* Level held, nudged by sensitivity (d') so clean play outranks lucky play.
        Published adult results mostly fall between 2- and 3-back. */
@@ -106,7 +103,6 @@ export const ABILITIES = [
     name: 'Processing Speed',
     game: 'reaction',
     gameName: 'Reaction Speed',
-    icon: '⚡',
     what: 'Seeing, deciding and responding quickly',
     /* Median reaction times as measured in a browser (which adds some device
        latency). With a choice part, the decision speed dominates: choice time /
@@ -134,7 +130,6 @@ export const ABILITIES = [
     name: 'Flexibility',
     game: 'task-switch',
     gameName: 'Task Switch',
-    icon: '\u{1F504}',
     what: 'Changing mental gears when the rules change',
     /* Switch cost (median correct RT after a rule change minus on a repeat), with
        published results for cued switching mostly between 100 and 300ms. Predictable
@@ -156,7 +151,6 @@ export const ABILITIES = [
     name: 'Reasoning',
     game: 'number-pattern',
     gameName: 'Number Pattern',
-    icon: '\u{1F522}',
     what: 'Finding the rule behind a pattern and applying it',
     /* The adaptive difficulty settles where the player gets about 70% right, so the
        level held in the second half is the estimate. Levels are absolute (the same
@@ -175,7 +169,6 @@ export const ABILITIES = [
     name: 'Spatial Reasoning',
     game: 'spatial-rotation',
     gameName: 'Spatial Rotation',
-    icon: '\u{1F9CA}',
     what: 'Turning shapes in your mind to compare them',
     /* Median correct RT / accuracy. Published 2D mental-rotation times for turns up
        to 180 degrees mostly run 1-3s. With two choices, 50% is chance, so accuracy
@@ -189,11 +182,87 @@ export const ABILITIES = [
       return Math.round(s);
     },
     metric: (run) => `${run.accuracy}% accurate, ${(run.medianRt / 1000).toFixed(1)}s median`
+  },
+  {
+    id: 'sequence-memory',
+    name: 'Sequence Memory',
+    game: 'sequence-recall',
+    gameName: 'Sequence Recall',
+    what: 'Holding items in mind in order and playing them back',
+    /* Digit span. Published adult forward spans mostly fall around 6-7 and backward
+       spans about two digits shorter, so a backward span earns +2 and the slower
+       Easy pace gives up a quarter digit. Rough reference points, not norms. */
+    score(run) {
+      if (typeof run.span !== 'number' || (run.total || 0) < 2) return null;
+      const shift = run.reverse ? 2 : run.mode === 'easy' ? -0.25 : 0;
+      return Math.round(curve(run.span + shift,
+        [[0, 2], [2, 5], [3, 10], [4, 20], [5, 32], [6, 43], [6.5, 50], [7, 57], [8, 70], [9, 82], [10, 91], [11, 96], [12, 99]]));
+    },
+    metric: (run) => `span ${run.span}${run.reverse ? ' backwards' : ''}, ${run.correct}/${run.total} correct`
+  },
+  {
+    id: 'tracking',
+    name: 'Visual Tracking',
+    game: 'visual-tracking',
+    gameName: 'Visual Tracking',
+    what: 'Following one moving object among identical ones',
+    /* The staircase settles on the speed the player can follow at about 70% right,
+       so the speed held in the second half is the estimate. More look-alikes make
+       the same speed harder, so it is credited by object count. These anchors are
+       our own judgement for this arena, not published norms. Accuracy near
+       chance means the player was not tracking at all, so it is capped. */
+    score(run) {
+      if (typeof run.speedHeld !== 'number' || (run.total || 0) < 6) return null;
+      const load = 0.8 + 0.09 * Math.max(0, (run.objects || 5) - 3);
+      let s = curve(run.speedHeld * load,
+        [[100, 5], [150, 15], [200, 28], [250, 40], [300, 50], [360, 60], [420, 70], [500, 82], [580, 91], [680, 97]]);
+      if ((run.accuracy || 0) < 45) s = Math.min(s, 30);
+      return Math.round(s);
+    },
+    metric: (run) => `speed ${run.levelEstimate} held with ${run.objects} objects, ${run.accuracy}% right`
+  },
+  {
+    id: 'sustained-attention',
+    name: 'Sustained Attention',
+    game: 'attention-storm',
+    gameName: 'Attention Storm',
+    what: 'Catching every target in a long, fast stream without reacting to look-alikes',
+    /* Sensitivity (d-prime) drives the score: stars caught against false alarms, so
+       pressing at everything and pressing at nothing both score low. Faster paces
+       earn a little credit, and reaction time moves the score by at most 5 points -
+       it can never make up for misses or false alarms. Anchors are our own
+       judgement for this task, not published norms. d' under 1 is near guessing. */
+    score(run) {
+      if (typeof run.dprime !== 'number' || (run.total || 0) < 40 || ((run.hits || 0) + (run.misses || 0)) < 8) return null;
+      const eff = run.dprime + 0.2 * ((run.levelEstimate ?? 3) - 3);
+      let s = curve(eff, [[0, 2], [1, 10], [1.5, 18], [2, 28], [2.5, 39], [3, 50], [3.5, 62], [4, 74], [4.5, 86], [5, 94], [5.5, 98]]);
+      if (typeof run.medianRt === 'number') s += clamp((480 - run.medianRt) / 20, -5, 5);
+      if (run.dprime < 1) s = Math.min(s, 20);
+      return Math.round(clamp(s, 0, 100));
+    },
+    metric: (run) => `${run.hitRate}% of stars caught, ${run.falseAlarms} false alarms, d′ ${run.dprime}`
+  },
+  {
+    id: 'planning',
+    name: 'Planning',
+    game: 'path-finder',
+    gameName: 'Path Finder',
+    what: 'Working out the best route before committing to it',
+    /* Only a perfect route moves the player up, so the level held in the second
+       half is the main estimate. Route efficiency (best cost / cost walked) nudges
+       it: always-best routes add half a level, 70% efficiency takes one off.
+       Weighted (mud) puzzles earn half a level. Anchors are our own judgement,
+       not published norms. Mostly unsolved rounds are capped. */
+    score(run) {
+      if (typeof run.levelEstimate !== 'number' || (run.total || 0) < 5) return null;
+      const x = run.levelEstimate + (run.weighted ? 0.5 : 0) + ((run.efficiency || 0) - 90) / 20;
+      let s = curve(x, [[1, 10], [1.5, 18], [2, 27], [2.5, 36], [3, 45], [3.5, 53], [4, 62], [4.5, 71], [5, 80], [5.5, 88], [6, 94], [6.5, 98]]);
+      if ((run.completionRate || 0) < 40) s = Math.min(s, 25);
+      return Math.round(s);
+    },
+    metric: (run) => `level ${run.levelEstimate} held, ${run.correct}/${run.total} best routes, ${run.efficiency}% efficient`
   }
 ];
-
-/* Abilities announced but not yet playable (none - all seven games are built). */
-export const COMING_SOON = [];
 
 export const abilityFor = (gameId) => ABILITIES.find((a) => a.game === gameId) || null;
 
@@ -243,23 +312,24 @@ async function migrateOnce() {
 /**
  * Called by each game when a round ends. Stores the raw result and reports how
  * the ability score moved, for the results screen.
- * meta.source: 'practice' (default) or 'official'; official rounds also carry
- * their sessionId. Both count toward this rolling profile; only official
- * sessions can ever count toward rankings.
+ * meta.source: 'practice' (default), 'official' (Brain Test) or 'daily' (Daily
+ * Brain Check); test rounds also carry their sessionId. All of them count toward
+ * this rolling profile; only official sessions can ever count toward rankings.
  */
 export async function logRun(gameId, result, meta = {}) {
   await migrateOnce();
   const ability = abilityFor(gameId);
   const history = await getHistory(gameId);
   const before = ability ? abilityScore(ability, history) : null;
-  const source = meta.source === 'official' ? 'official' : 'practice';
+  const source = meta.source === 'official' || meta.source === 'daily' ? meta.source : 'practice';
 
   history.push({ ...result, ts: Date.now(), source, ...(meta.sessionId ? { sessionId: meta.sessionId } : {}) });
   while (history.length > HISTORY_CAP) history.shift();
   await set(histKey(gameId), history);
 
-  track(source === 'official' ? 'game_completed' : 'practice_completed', {
+  track(source === 'practice' ? 'practice_completed' : 'game_completed', {
     game_id: gameId,
+    source,
     session_id: meta.sessionId || null,
     difficulty: result.mode || null,
     score: typeof result.score === 'number' ? result.score : null,
@@ -327,7 +397,7 @@ export async function buildMindProfile() {
     const s = abilityScore(a, runs);
     const last = runs.length ? runs[runs.length - 1] : null;
     return {
-      id: a.id, name: a.name, game: a.game, gameName: a.gameName, icon: a.icon, what: a.what,
+      id: a.id, name: a.name, game: a.game, gameName: a.gameName, what: a.what,
       ...s,
       lastMetric: last ? a.metric(last) : null
     };
@@ -352,7 +422,6 @@ export async function buildMindProfile() {
     total: ABILITIES.length,
     complete: scored.length === ABILITIES.length && scored.every((a) => !a.provisional),
     abilities,
-    trend,
-    comingSoon: COMING_SOON
+    trend
   };
 }

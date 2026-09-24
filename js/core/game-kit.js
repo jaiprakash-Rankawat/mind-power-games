@@ -1,6 +1,6 @@
 /* Shared screens for the newer games. They reproduce the original games' setup,
    countdown and results screens exactly (same classes, same behaviour), so all
-   seven games feel like one product. The three original games keep their own
+   eleven games feel like one product. The three original games keep their own
    copies of this code untouched. */
 
 import { el } from './util.js';
@@ -8,10 +8,9 @@ import { saveBest, getBest, recordRound } from './storage.js';
 import { logRun } from './profile.js';
 import { sfx } from './audio.js';
 import { countUp } from './fx.js';
-import { gradeChip, abilityChip, resultFx } from './arcade.js';
+import { gradeChip, abilityChip, resultFx, CONFETTI } from './arcade.js';
 import { randomSeed } from './rng.js';
-import { getGame } from './games.js';
-import { showTutorial } from './tutorial.js';
+import { howToPlayButton } from './tutorial.js';
 
 /** Screen swapper with teardown, as each original game has. */
 export function createScreens(root) {
@@ -26,6 +25,10 @@ export function createScreens(root) {
 
 export const officialOf = (ctx) => (ctx && ctx.official ? ctx.official : null);
 
+/** Test settings: a mode, plus any per-test adjustments (e.g. the Daily Brain Check's shorter rounds). */
+export const officialConfig = (modes, official) =>
+  ({ ...(modes[official.difficulty] || modes.medium), ...(official.overrides || {}) });
+
 /** Official runs use the session-derived seed; practice runs get a fresh one. */
 export const seedFor = (ctx) => (officialOf(ctx) && typeof ctx.official.seed === 'number' ? ctx.official.seed : randomSeed());
 
@@ -34,17 +37,8 @@ export async function setupPanel({ gameId, title, lead, demo, rules, modes, best
   const bests = {};
   for (const m of Object.values(modes)) bests[m.key] = await getBest(gameId, m.key);
 
-  const gameMeta = getGame(gameId);
-  const tutorial = gameMeta?.tutorial;
-  const helpBtn = tutorial && tutorial.length
-    ? el('button', { class: 'ghost-btn', type: 'button', title: 'Replay tutorial',
-        style: { position: 'absolute', top: '14px', right: '14px', fontSize: '16px', width: '32px', height: '32px', display: 'grid', placeItems: 'center', borderRadius: '50%' },
-        onclick: () => showTutorial(document.body, gameId, tutorial)
-      }, '?')
-    : null;
-
-  return el('div', { class: 'panel', style: { position: 'relative' } },
-    helpBtn,
+  return el('div', { class: 'panel setup-panel' },
+    howToPlayButton(gameId, { className: 'ghost-btn tut-open corner' }),
     el('h2', { text: title }),
     el('p', { class: 'lead', text: lead }),
     el('div', { class: 'rules' },
@@ -93,7 +87,8 @@ export async function completeRound({ ctx, gameId, cfg, result, showResults }) {
   const prevBest = await getBest(gameId, cfg.key);
   const isRecord = await saveBest(gameId, cfg.key, result);
   await recordRound(result.score);
-  const change = await logRun(gameId, result, official ? { source: 'official', sessionId: official.sessionId } : {});
+  const change = await logRun(gameId, result,
+    official ? { source: official.source || 'official', sessionId: official.sessionId } : {});
   if (official) { official.onComplete(result); return; }
   showResults({ isRecord, prevBest, change });
 }
@@ -128,7 +123,7 @@ export function resultsPanel({ subtitle, grade, headline, verdict, isRecord, pre
   document.addEventListener('keydown', onKey);
   const confetti = resultFx(panel);
   if (headline === undefined) countUp(scoreEl, score, 900);
-  if (isRecord && score > 0) confetti.start(confettiColors || ['#a789ff', '#37dcf2', '#34d399', '#fbbf24']);
+  if (isRecord && score > 0) confetti.start(confettiColors || CONFETTI);
   return { node: panel, cleanup: () => { document.removeEventListener('keydown', onKey); confetti.stop(); } };
 }
 

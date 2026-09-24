@@ -1,8 +1,11 @@
 /* The shared "game feel" shell: a board with an ambient glow that tints to the
    action, a particle layer, a damage flash and a callout chip. Every game builds
-   its own content on top of this, so the three of them stay visually consistent. */
+   its own content on top of this, so all eleven stay visually consistent. */
 
 import { el } from './util.js';
+
+/** Confetti in the palette's colours: blue, light blue, amber, white. */
+export const CONFETTI = ['#3b82f6', '#93c5fd', '#fbbf24', '#e2e8f0'];
 import { createFx } from './fx.js';
 
 export function createStage(extraClass = '') {

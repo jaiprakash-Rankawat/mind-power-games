@@ -1,6 +1,6 @@
 /* Chart + meter styles shared by the profile page and the popup.
-   Data marks: brand accent #7c5cff (passes the lightness, chroma and 3:1 contrast
-   checks against the #1a1f3d card surface). Grid, axes and bands stay recessive;
+   Data marks use the brand token, which keeps 3:1 contrast against the card
+   surface in both themes. Grid, axes and bands stay recessive;
    all text uses text tokens, never the series colour. */
 
 .viz{position:relative}
@@ -8,9 +8,9 @@
 
 .viz-grid{fill:none;stroke:rgba(255,255,255,.09);stroke-width:1}
 .viz-band{fill:rgba(255,255,255,.045)}
-.viz-area{fill:rgba(124,92,255,.14);stroke:none}
-.viz-line{fill:none;stroke:#7c5cff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.viz-dot{fill:#7c5cff;stroke:var(--card);stroke-width:2}
+.viz-area{fill:rgb(var(--brand-rgb) / .14);stroke:none}
+.viz-line{fill:none;stroke:var(--brand);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.viz-dot{fill:var(--brand);stroke:var(--card);stroke-width:2}
 .viz-hit{fill:transparent;cursor:pointer;outline:none}
 .viz-hit:focus-visible{stroke:var(--brand-2);stroke-width:2}
 .viz svg:focus-visible{outline:2px solid var(--brand-2);outline-offset:4px;border-radius:6px}
@@ -30,7 +30,7 @@ svg.hovering .viz-marker{opacity:1}
   position:absolute;left:0;top:0;transform:translate(-50%,-100%);pointer-events:none;
   opacity:0;transition:opacity .12s ease;white-space:nowrap;z-index:5;
   display:flex;flex-direction:column;align-items:center;gap:1px;
-  padding:6px 11px;border-radius:10px;background:#0f1227;border:1px solid var(--line);
+  padding:6px 11px;border-radius:10px;background:var(--tip-bg);border:1px solid var(--line);
   box-shadow:0 10px 24px rgba(0,0,0,.45);
 }
 .viz-tip.on{opacity:1}
@@ -41,8 +41,8 @@ svg.hovering .viz-marker{opacity:1}
 .viz-caption{color:var(--muted);font-size:11px;margin:8px 0 0}
 
 /* 0-100 meter: fill in the accent, track a dim step of the same hue */
-.meter{position:relative;display:block;height:8px;border-radius:99px;background:rgba(124,92,255,.16);overflow:hidden}
-.meter-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:#7c5cff;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.meter{position:relative;display:block;height:8px;border-radius:99px;background:rgb(var(--brand-rgb) / .16);overflow:hidden}
+.meter-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--brand);transition:width .7s cubic-bezier(.2,.8,.2,1)}
 .meter-band{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.13);pointer-events:none}
 .meter.empty{background:rgba(255,255,255,.06)}
 
@@ -56,5 +56,29 @@ svg.hovering .viz-marker{opacity:1}
   padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)
 }
 
+/* Brain Level: a badge and the XP bar to the next level */
+.lv{display:flex;align-items:center;gap:12px}
+.lv-badge{
+  width:52px;height:52px;flex:none;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1;color:#fff;
+  background:linear-gradient(140deg,var(--brand),var(--brand-2));box-shadow:0 8px 20px rgb(var(--brand-rgb) / .35);
+}
+.lv-label{font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;opacity:.85}
+.lv-num{font-size:22px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.lv-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.lv-track{position:relative;display:block;height:10px;border-radius:99px;background:rgb(var(--brand-rgb) / .16);overflow:hidden}
+.lv-fill{
+  position:absolute;left:0;top:0;bottom:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--brand),var(--brand-2));transition:width .8s cubic-bezier(.2,.8,.2,1);
+}
+.lv-text{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lv.compact{gap:9px}
+.lv.compact .lv-badge{width:38px;height:38px;border-radius:12px;box-shadow:none}
+.lv.compact .lv-label{font-size:7px}
+.lv.compact .lv-num{font-size:16px;margin-top:1px}
+.lv.compact .lv-track{height:7px}
+.lv.compact .lv-text{font-size:10.5px}
+
 /* ---------- light mode ---------- */
-[data-theme="light"] .viz-tip{background:#1a1c2e;color:#f4f5fb}
+[data-theme="light"] .viz-tip{background:var(--tip-bg);color:var(--bg)}
+[data-theme="light"] .lv-track{background:rgb(var(--brand-rgb) / .12)}

@@ -2,9 +2,12 @@ import { GAMES } from './core/games.js';
 import { getProfile, clearAll } from './core/storage.js';
 import { buildMindProfile, abilityFor, TYPICAL } from './core/profile.js';
 import { getCurrentSession, listSessions, officialOrder, testMinutes } from './core/session.js';
+import { dailyState, dailyOrder, dailyMinutes, untilNextCheck } from './core/daily.js';
+import { levelBar } from './core/level-ui.js';
 import { noteFirstOpen, track } from './core/analytics.js';
 import { meter } from './core/charts.js';
 import { el } from './core/util.js';
+import { iconSvg } from './core/icons.js';
 import { wireThemeToggle } from './core/theme-toggle.js';
 
 noteFirstOpen();
@@ -22,25 +25,53 @@ async function openGame(id) {
   openPage(`game.html?game=${encodeURIComponent(id)}`);
 }
 
-/* ------------------------------------------------------- brain test card */
+/* ------------------------------------------------- daily check (primary) */
+
+async function renderDailyCard() {
+  const card = document.getElementById('dailyCard');
+  const st = await dailyState();
+  const n = dailyOrder().length;
+
+  let cta;
+  let line;
+  if (st.current) {
+    cta = `Resume · game ${st.current.index + 1} of ${n}`;
+    line = st.current.counted ? "Today's check is in progress" : 'Practice run in progress';
+  } else if (st.doneToday) {
+    cta = `✓ Done today · ${st.today.score ?? '—'} / 100`;
+    line = `New check in ${untilNextCheck()}`;
+  } else {
+    cta = st.history.length ? "Start today's check →" : 'Take your first check →';
+    line = st.lastScore === null ? 'Five games that set your Brain Level' : `Beat your last score: ${st.lastScore}`;
+  }
+
+  card.replaceChildren(
+    el('span', { class: 'tc-top' },
+      el('span', { class: 'tc-label', text: 'Daily Brain Check' }),
+      el('span', { class: 'tc-meta', text: `${n} games · about ${dailyMinutes()} min` })),
+    el('span', { class: 'tc-cta', text: cta }),
+    el('span', { class: 'tc-latest', text: line }),
+    levelBar(st.level, { compact: true })
+  );
+  card.onclick = () => openPage('daily.html');
+}
+
+/* ----------------------------------------------- brain test (secondary) */
 
 async function renderTestCard() {
   const card = document.getElementById('testCard');
   const current = await getCurrentSession();
   const done = (await listSessions()).filter((s) => s.status === 'completed');
   const latest = done[done.length - 1];
-  const total = officialOrder().length;
 
-  const latestLine = latest
-    ? el('span', { class: 'tc-latest', text: `Latest: ${latest.overall ?? '—'} / 100 · ${new Date(latest.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` })
-    : el('span', { class: 'tc-latest', text: 'No account needed' });
+  const meta = `${officialOrder().length} games · about ${testMinutes()} min` +
+    (latest && latest.overall !== null ? ` · latest ${latest.overall}` : '');
 
   card.replaceChildren(
-    el('span', { class: 'tc-top' },
-      el('span', { class: 'tc-label', text: 'Brain Test' }),
-      el('span', { class: 'tc-meta', text: `${total} games · about ${testMinutes()} min` })),
-    el('span', { class: 'tc-cta', text: current ? `Resume · game ${current.index + 1} of ${current.order.length}` : 'Start Brain Test →' }),
-    latestLine
+    el('span', { class: 'tc-main' },
+      el('span', { class: 'tc-label', text: 'Full Brain Test' }),
+      el('span', { class: 'tc-meta', text: meta })),
+    el('span', { class: 'tc-go', text: current ? `Resume ${current.index + 1}/${current.order.length} →` : 'Start →' })
   );
   card.onclick = () => openPage('test.html');
 }
@@ -88,7 +119,7 @@ function gameCard(game, profile) {
 
   return el('button', { class: 'game-card', type: 'button', title: game.tagline, onclick: () => openGame(game.id) },
     el('span', { class: 'gc-row' },
-      el('span', { class: 'gc-icon', 'aria-hidden': 'true', text: game.icon }),
+      el('span', { class: 'gc-icon', 'aria-hidden': 'true', html: iconSvg(game.id) }),
       el('span', { class: 'gc-title', text: game.name })),
     el('span', { class: 'gc-row2' },
       el('span', { class: 'gc-ability',
@@ -98,26 +129,16 @@ function gameCard(game, profile) {
   );
 }
 
-function lockedRow(game) {
-  return el('div', { class: 'locked-row' },
-    el('span', { class: 'lr-icon', 'aria-hidden': 'true', text: game.icon }),
-    el('span', { class: 'lr-name', text: game.name }),
-    el('span', { class: 'lr-skill', text: game.skills }),
-    el('span', { class: 'pill', text: 'soon' })
-  );
-}
-
 /* ----------------------------------------------------------------- render */
 
 async function render() {
   const [profile, totals] = await Promise.all([buildMindProfile(), getProfile()]);
 
-  await renderTestCard();
+  await Promise.all([renderDailyCard(), renderTestCard()]);
   renderBrainCard(profile);
 
   document.getElementById('gameList').replaceChildren(
-    ...GAMES.filter((g) => !g.locked).map((g) => gameCard(g, profile)),
-    ...GAMES.filter((g) => g.locked).map(lockedRow)
+    ...GAMES.filter((g) => !g.locked).map((g) => gameCard(g, profile))
   );
 
   // Set stagger index for entrance animation
